@@ -19,7 +19,7 @@ app.add_middleware(
 )
 
 # ------------------ 讀取路網 ------------------
-pkl_path = os.path.join(os.path.dirname(__file__), "Kao_Road_intersect25m_濃度_最大連通版.pkl")
+pkl_path = os.path.join(os.path.dirname(__file__), "data/Kao_Road_intersect25m_濃度_最大連通版.pkl")
 
 if not os.path.exists(pkl_path):
     raise FileNotFoundError(f"找不到路網檔案: {pkl_path}")
