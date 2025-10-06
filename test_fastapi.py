@@ -21,7 +21,7 @@ app.add_middleware(
 # -------------------------
 # 讀取路網（完整路網）
 # -------------------------
-pkl_path = r"C:/Users/ASUS/Desktop/2507.路徑規劃系統教學/system_test/data/Kao_Road_intersect25m_濃度_最大連通版.pkl"
+pkl_path = r"data/Kao_Road_intersect25m_濃度_最大連通版.pkl"
 
 if not os.path.exists(pkl_path):
     raise FileNotFoundError(f"找不到路網檔案: {pkl_path}")
