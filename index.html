@@ -93,8 +93,8 @@ function fetchRoute(weight){
   if(!startLatLng || !endLatLng) return;
 
   const urls = [
-    `http://127.0.0.1:8000/route?start_lat=${startLatLng.lat}&start_lon=${startLatLng.lng}&end_lat=${endLatLng.lat}&end_lon=${endLatLng.lng}&weight=length`,
-    `http://127.0.0.1:8000/route?start_lat=${startLatLng.lat}&start_lon=${startLatLng.lng}&end_lat=${endLatLng.lat}&end_lon=${endLatLng.lng}&weight=PM25_expo`
+  `https://route-api-gnle.onrender.com/route?start_lat=${startLatLng.lat}&start_lon=${startLatLng.lng}&end_lat=${endLatLng.lat}&end_lon=${endLatLng.lng}&weight=length`,
+  `https://route-api-gnle.onrender.com/route?start_lat=${startLatLng.lat}&start_lon=${startLatLng.lng}&end_lat=${endLatLng.lat}&end_lon=${endLatLng.lng}&weight=PM25_expo`
   ];
 
   clearPaths();
@@ -117,7 +117,7 @@ function fetchRoute(weight){
   } else {
     legendDiv.style.display='block';
     const selWeight = weight;
-    fetch(`http://127.0.0.1:8000/route?start_lat=${startLatLng.lat}&start_lon=${startLatLng.lng}&end_lat=${endLatLng.lat}&end_lon=${endLatLng.lng}&weight=${selWeight}`)
+    fetch(`https://route-api-gnle.onrender.com/route?start_lat=${startLatLng.lat}&start_lon=${startLatLng.lng}&end_lat=${endLatLng.lat}&end_lon=${endLatLng.lng}&weight=${selWeight}`)
       .then(r=>r.json()).then(res=>{
         if(res.type==="Feature"){
           const coords = res.geometry.coordinates.map(c=>[c[1], c[0]]);
