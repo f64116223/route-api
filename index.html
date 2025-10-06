@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>健康導向路徑規劃</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+  #map { height: 100vh; width: 100vw; }
+  #info {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    z-index: 10000;
+    background: rgba(255,255,255,0.95);
+    padding: 10px;
+    font-size: 16px;
+    line-height: 1.4;
+    border-radius: 5px;
+    max-width: 300px;
+    white-space: pre-line;
+  }
+  #controls {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10000;
+    background: rgba(255,255,255,0.95);
+    padding: 10px;
+    border-radius: 5px;
+  }
+  #legend {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10000;
+    background: rgba(255,255,255,0.95);
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  .legend-item { display: flex; align-items: center; margin-bottom: 5px; }
+  .color-box {
+    width: 20px;
+    height: 10px;
+    margin-right: 5px;
+  }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="info">請點選地圖選擇起點與終點</div>
+<div id="controls">
+  <button id="singlePathBtn">單一路徑</button>
+  <button id="dualPathBtn">雙路徑</button>
+  <br><br>
+  <label>權重: 
+    <select id="weightSelect">
+      <option value="length">最短路徑</option>
+      <option value="PM25_expo">最少PM2.5</option>
+    </select>
+  </label>
+  <br><br>
+  <button id="resetBtn">重新設定起點終點</button>
+</div>
+<div id="legend" style="display:none;">
+  <div class="legend-item"><div class="color-box" style="background:blue"></div>最短路徑</div>
+  <div class="legend-item"><div class="color-box" style="background:red"></div>最少PM2.5路徑</div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+let map = L.map('map').setView([22.6273, 120.3014], 13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+
+const infoDiv = document.getElementById('info');
+const legendDiv = document.getElementById('legend');
+let startLatLng = null, endLatLng = null;
+let startMarker=null, endMarker=null;
+let pathLayers = [];
+let showDual = false;
+
+function updateInfo(distances){
+  let text="";
+  if(startLatLng) text+=`起點: ${startLatLng.lat.toFixed(6)}, ${startLatLng.lng.toFixed(6)}\n`;
+  if(endLatLng) text+=`終點: ${endLatLng.lat.toFixed(6)}, ${endLatLng.lng.toFixed(6)}\n`;
+  if(distances){
+    distances.forEach(d=>text+=`${d.name}：${d.distance.toFixed(1)} 公尺\n`);
+  }
+  infoDiv.innerText=text;
+}
+
+function fetchRoute(weight){
+  if(!startLatLng || !endLatLng) return;
+
+  const urls = [
+    `http://127.0.0.1:8000/route?start_lat=${startLatLng.lat}&start_lon=${startLatLng.lng}&end_lat=${endLatLng.lat}&end_lon=${endLatLng.lng}&weight=length`,
+    `http://127.0.0.1:8000/route?start_lat=${startLatLng.lat}&start_lon=${startLatLng.lng}&end_lat=${endLatLng.lat}&end_lon=${endLatLng.lng}&weight=PM25_expo`
+  ];
+
+  clearPaths();
+
+  if(showDual){
+    legendDiv.style.display='block';
+    Promise.all(urls.map(u=>fetch(u).then(r=>r.json()))).then(results=>{
+      results.forEach((res,i)=>{
+        if(res.type==="Feature"){
+          const coords = res.geometry.coordinates.map(c=>[c[1], c[0]]);
+          const layer = L.polyline(coords, {color: i===0?'blue':'red', weight:5}).addTo(map);
+          pathLayers.push(layer);
+        }
+      });
+      updateInfo([
+        {name:'最短路徑', distance: results[0].properties.weight==='length'?calcDistance(results[0].geometry.coordinates):0},
+        {name:'最少PM2.5路徑', distance: results[1].properties.weight==='PM25_expo'?calcDistance(results[1].geometry.coordinates):0}
+      ]);
+    });
+  } else {
+    legendDiv.style.display='block';
+    const selWeight = weight;
+    fetch(`http://127.0.0.1:8000/route?start_lat=${startLatLng.lat}&start_lon=${startLatLng.lng}&end_lat=${endLatLng.lat}&end_lon=${endLatLng.lng}&weight=${selWeight}`)
+      .then(r=>r.json()).then(res=>{
+        if(res.type==="Feature"){
+          const coords = res.geometry.coordinates.map(c=>[c[1], c[0]]);
+          const layer = L.polyline(coords, {color:'blue', weight:5}).addTo(map);
+          pathLayers.push(layer);
+          updateInfo([{name: selWeight==='length'?'最短路徑':'最少PM2.5路徑', distance: calcDistance(res.geometry.coordinates)}]);
+        }
+      });
+  }
+}
+
+function calcDistance(coords){
+  let total=0;
+  for(let i=1;i<coords.length;i++){
+    const [lon1,lat1]=coords[i-1];
+    const [lon2,lat2]=coords[i];
+    total+=map.distance([lat1,lon1],[lat2,lon2]);
+  }
+  return total;
+}
+
+function clearPaths(){
+  pathLayers.forEach(l=>map.removeLayer(l));
+  pathLayers=[];
+}
+
+map.on('click', function(e){
+  if(!startLatLng){
+    startLatLng = e.latlng;
+    startMarker = L.marker(startLatLng, {title:'起點'}).addTo(map);
+  } else if(!endLatLng){
+    endLatLng = e.latlng;
+    endMarker = L.marker(endLatLng, {title:'終點'}).addTo(map);
+  }
+});
+
+document.getElementById('singlePathBtn').addEventListener('click', ()=>{
+  showDual=false;
+  fetchRoute(document.getElementById('weightSelect').value);
+});
+document.getElementById('dualPathBtn').addEventListener('click', ()=>{
+  showDual=true;
+  fetchRoute(document.getElementById('weightSelect').value);
+});
+document.getElementById('weightSelect').addEventListener('change', ()=>{
+  fetchRoute(document.getElementById('weightSelect').value);
+});
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  if(startMarker) map.removeLayer(startMarker);
+  if(endMarker) map.removeLayer(endMarker);
+  startMarker=endMarker=null;
+  startLatLng=endLatLng=null;
+  clearPaths();
+  infoDiv.innerText='請點選地圖選擇起點與終點';
+  legendDiv.style.display='none';
+});
+</script>
+</body>
+</html>
