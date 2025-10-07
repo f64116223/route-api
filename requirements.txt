@@ -1,7 +1,5 @@
 fastapi
 uvicorn
 networkx
-osmnx
-pandas
-geopandas
-shapely
+scipy
+pyproj
