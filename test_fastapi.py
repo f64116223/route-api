@@ -10,7 +10,7 @@ import os
 app = FastAPI(title="健康導向路徑規劃 API")
 
 # ------------------------------
-# CORS（讓你的 HTML 可以請求 API）
+# CORS（讓 HTML 可以請求 API）
 # ------------------------------
 app.add_middleware(
     CORSMiddleware,
@@ -20,9 +20,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ------------------------------
-# 根路由（Render 健康檢查用）
-# ------------------------------
 @app.get("/")
 def home():
     return {"status": "API running successfully 🚀"}
@@ -38,34 +35,27 @@ if not os.path.exists(pkl_path):
 with open(pkl_path, "rb") as f:
     G = pickle.load(f)
 
-# 修正 attr_dict 結構（某些 pickle 版本會包兩層）
+# 修正某些 pickle 版本會包兩層 attr_dict 的問題
 for u, v, d in G.edges(data=True):
     if "attr_dict" in d:
         for key, val in d["attr_dict"].items():
             d[key] = val
 
 # ------------------------------
-# 建立投影轉換器：EPSG:3826 → EPSG:4326
+# 建立投影轉換器（WGS84 → TWD97）
 # ------------------------------
-transformer = Transformer.from_crs("EPSG:3826", "EPSG:4326", always_xy=True)
+transformer = Transformer.from_crs("EPSG:4326", "EPSG:3826", always_xy=True)
 
-mapping = {}
-for node in G.nodes:
-    lon, lat = transformer.transform(node[0], node[1])  # 注意順序 (x, y) -> (lon, lat)
-    mapping[(lat, lon)] = node
-    G.nodes[node]["latlon"] = (lat, lon)
-
-latlon_nodes = list(mapping.keys())
-node_lookup = mapping
-kdtree = KDTree(latlon_nodes)
-
+# 取出所有節點的 (x, y) 座標（這是 EPSG:3826）
+node_xy = list(G.nodes)
+kdtree = KDTree(node_xy)
 
 def find_nearest_node(lat, lon):
-    """找到最接近座標的節點"""
-    dist, idx = kdtree.query((lat, lon))
-    nearest_node = node_lookup[latlon_nodes[idx]]
+    """從經緯度找到圖中最近的節點"""
+    x, y = transformer.transform(lon, lat)  # 轉成 3826 座標
+    dist, idx = kdtree.query((x, y))
+    nearest_node = node_xy[idx]
     return nearest_node, dist
-
 
 # ------------------------------
 # 路徑查詢 API
@@ -94,28 +84,24 @@ def get_route(
         path = nx.shortest_path(G, start_node, end_node, weight=weight)
         print(f"✅ Path found, node count: {len(path)}")
 
-        if len(path) < 3:
-            print("⚠️ 路徑太短，可能節點定位錯誤")
-
-        coords = [G.nodes[n]["latlon"] for n in path]
+        # 再轉回經緯度（給前端畫圖）
+        back_transformer = Transformer.from_crs("EPSG:3826", "EPSG:4326", always_xy=True)
+        coords = []
+        for n in path:
+            lon, lat = back_transformer.transform(n[0], n[1])
+            coords.append([lon, lat])
 
         geojson = {
             "type": "Feature",
-            "geometry": {
-                "type": "LineString",
-                "coordinates": [[lon, lat] for lat, lon in coords],
-            },
-            "properties": {
-                "weight": weight,
-                "node_count": len(path)
-            },
+            "geometry": {"type": "LineString", "coordinates": coords},
+            "properties": {"weight": weight, "node_count": len(path)},
         }
+
         return JSONResponse(content=geojson)
 
     except Exception as e:
         print(f"❌ Error: {e}")
         return JSONResponse(content={"error": str(e)}, status_code=500)
-
 
 # ------------------------------
 # 本地測試用
