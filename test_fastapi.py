@@ -1,65 +1,64 @@
 from fastapi import FastAPI, Query
 from fastapi.responses import JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
-import networkx as nx
 import pickle
+import networkx as nx
 from scipy.spatial import KDTree
 from pyproj import Transformer
 import os
+from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI(title="健康導向路徑規劃 API")
+app = FastAPI(title="健康導向路徑測試 API")
 
-# ------------------------------
-# CORS（讓 HTML 可以請求 API）
-# ------------------------------
+# ------------------ CORS ------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # 允許所有來源
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-@app.get("/")
-def home():
-    return {"status": "API running successfully 🚀"}
-
-# ------------------------------
-# 載入路網
-# ------------------------------
-pkl_path = os.path.join(os.path.dirname(__file__), "data/Kao_Road_intersect25m_濃度_最大連通版.pkl")
+# -------------------------
+# 讀取路網（完整路網）
+# -------------------------
+pkl_path = r"data/Kao_Road_intersect25m_濃度_最大連通版.pkl"
 
 if not os.path.exists(pkl_path):
-    raise FileNotFoundError(f"❌ 找不到路網檔案：{pkl_path}")
+    raise FileNotFoundError(f"找不到路網檔案: {pkl_path}")
 
 with open(pkl_path, "rb") as f:
     G = pickle.load(f)
 
-# 修正某些 pickle 版本會包兩層 attr_dict 的問題
+# -------------------------
+# 修正邊屬性格式
+# -------------------------
 for u, v, d in G.edges(data=True):
-    if "attr_dict" in d:
-        for key, val in d["attr_dict"].items():
-            d[key] = val
+    if 'attr_dict' in d:
+        for key, value in d['attr_dict'].items():
+            d[key] = value  # 將 attr_dict 裡的權重搬到邊上
 
-# ------------------------------
-# 建立投影轉換器（WGS84 → TWD97）
-# ------------------------------
-transformer = Transformer.from_crs("EPSG:4326", "EPSG:3826", always_xy=True)
+# -------------------------
+# 投影轉換 EPSG:3826 → EPSG:4326
+# -------------------------
+transformer = Transformer.from_crs("EPSG:3826", "EPSG:4326", always_xy=True)
 
-# 取出所有節點的 (x, y) 座標（這是 EPSG:3826）
-node_xy = list(G.nodes)
-kdtree = KDTree(node_xy)
+mapping = {}
+for node in G.nodes:
+    lon, lat = transformer.transform(node[0], node[1])
+    mapping[(lat, lon)] = node
+    G.nodes[node]["latlon"] = (lat, lon)
+
+G.graph["latlon_nodes"] = list(mapping.keys())
+G.graph["node_lookup"] = mapping
+kdtree = KDTree(G.graph["latlon_nodes"])
 
 def find_nearest_node(lat, lon):
-    """從經緯度找到圖中最近的節點"""
-    x, y = transformer.transform(lon, lat)  # 轉成 3826 座標
-    dist, idx = kdtree.query((x, y))
-    nearest_node = node_xy[idx]
-    return nearest_node, dist
+    dist, idx = kdtree.query((lat, lon))
+    return G.graph["node_lookup"][G.graph["latlon_nodes"][idx]]
 
-# ------------------------------
-# 路徑查詢 API
-# ------------------------------
+# -------------------------
+# API 端點
+# -------------------------
 @app.get("/route")
 def get_route(
     start_lat: float = Query(...),
@@ -70,42 +69,38 @@ def get_route(
 ):
     try:
         if weight not in ["length", "PM25_expo"]:
-            return JSONResponse(content={"error": "weight 必須是 'length' 或 'PM25_expo'"}, status_code=400)
+            return JSONResponse(content={"error": f"權重只能是 'length' 或 'PM25_expo'"}, status_code=400)
 
-        start_node, start_dist = find_nearest_node(start_lat, start_lon)
-        end_node, end_dist = find_nearest_node(end_lat, end_lon)
-
-        print(f"Start node: {start_node}, dist={start_dist:.2f}")
-        print(f"End node: {end_node}, dist={end_dist:.2f}")
+        start_node = find_nearest_node(start_lat, start_lon)
+        end_node = find_nearest_node(end_lat, end_lon)
 
         if not nx.has_path(G, start_node, end_node):
-            return JSONResponse(content={"error": "起點與終點無法連通"}, status_code=400)
+            return JSONResponse(content={"error": "起點與終點之間無可達路徑"}, status_code=400)
 
-        path = nx.shortest_path(G, start_node, end_node, weight=weight)
-        print(f"✅ Path found, node count: {len(path)}")
+        path = nx.shortest_path(G, source=start_node, target=end_node, weight=weight)
 
-        # 再轉回經緯度（給前端畫圖）
-        back_transformer = Transformer.from_crs("EPSG:3826", "EPSG:4326", always_xy=True)
-        coords = []
-        for n in path:
-            lon, lat = back_transformer.transform(n[0], n[1])
-            coords.append([lon, lat])
-
+        coords = [G.nodes[node]["latlon"] for node in path]
         geojson = {
             "type": "Feature",
-            "geometry": {"type": "LineString", "coordinates": coords},
-            "properties": {"weight": weight, "node_count": len(path)},
+            "geometry": {"type": "LineString", "coordinates": [[lon, lat] for lat, lon in coords]},
+            "properties": {"weight": weight, "nodes_count": len(path)}
         }
 
         return JSONResponse(content=geojson)
-
     except Exception as e:
-        print(f"❌ Error: {e}")
         return JSONResponse(content={"error": str(e)}, status_code=500)
 
-# ------------------------------
-# 本地測試用
-# ------------------------------
+# -------------------------
+# Debug 印出統計數字
+# -------------------------
+lengths = [d.get("length", 0) for u, v, d in G.edges(data=True)]
+pm25s = [d.get("PM25_expo", 0) for u, v, d in G.edges(data=True)]
+print("Length:", min(lengths), max(lengths), sum(lengths)/len(lengths))
+print("PM2.5:", min(pm25s), max(pm25s), sum(pm25s)/len(pm25s))
+
+# -------------------------
+# 主程式
+# -------------------------
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("test_fastapi:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("test_fastapi:app", host="127.0.0.1", port=8000, reload=True)
