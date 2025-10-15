@@ -112,7 +112,6 @@ print("PM2.5:", min(pm25s), max(pm25s), sum(pm25s)/len(pm25s))
 # 主程式（Cloud Run 友善版）
 # -------------------------
 if __name__ == "__main__":
-    import uvicorn
-    port = int(os.environ.get("PORT", 8000))  # Railway 預設 PORT
+    port = int(os.environ.get("PORT", 10000))
     uvicorn.run("main:app", host="0.0.0.0", port=port)
 
