@@ -1,5 +1,12 @@
 fastapi
-uvicorn
+uvicorn[standard]
 networkx
+numpy
 scipy
+shapely
 pyproj
+google-cloud-storage
+google-api-core
+firebase-admin>=6.5,<8
+google-cloud-firestore>=2.19,<3
+pydantic>=2.9,<3
