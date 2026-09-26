@@ -215,7 +215,9 @@ def reports(request: Request, response: Response, cursor: str | None = None):
     guard(request, response, admin=True)
     from google.cloud import firestore
     collection = services()[2].collection('chiayi_reports')
-    query = collection.order_by('created_at', direction=firestore.Query.DESCENDING).order_by('__name__')
+    # Match Firestore's default descending index, including its document-ID tie breaker.
+    query = collection.order_by('created_at', direction=firestore.Query.DESCENDING).order_by(
+        '__name__', direction=firestore.Query.DESCENDING)
     if cursor:
         try:
             UUID(cursor)
