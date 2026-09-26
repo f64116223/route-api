@@ -1,0 +1,5455 @@
+/* ===== 原 index.html style block 1 ===== */
+
+
+/* 身高拉桿樣式優化 */
+#heightSlider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 8px;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: #e6edf6;
+  border: none;
+  border-radius: 5px;
+  outline: none;
+  cursor: pointer;
+}
+
+#heightSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--accent-2);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+:root {
+  --accent: #7E6D68;
+  --accent-2: #685A56;
+  --accent-light: #F1EFED;
+  --highlight: #DFE200;
+  --highlight-dark: #C7CA00;
+  --panel: #FFFFFF;
+  --muted: #766F6C;
+  --bg: #F7F6F3;
+}
+
+/* ============================================================
+   系統歡迎畫面
+   ============================================================ */
+
+.welcome-overlay {
+  position: fixed;
+  inset: 0;
+
+  z-index: 99999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: clamp(10px, 2vh, 24px);
+
+  box-sizing: border-box;
+
+  background:
+    linear-gradient(
+      rgba(65, 55, 52, 0.72),
+      rgba(65, 55, 52, 0.72)
+    );
+
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+
+  opacity: 1;
+  visibility: visible;
+
+  overflow: hidden;
+
+  transition:
+    opacity 0.35s ease,
+    visibility 0.35s ease;
+}
+
+.welcome-green {
+  color: #3f7f55;
+  font-weight: 700;
+}
+
+/* 關閉動畫 */
+.welcome-overlay.hide {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+
+.welcome-card {
+  width: min(680px, calc(100vw - 48px));
+
+  background: rgba(255,255,255,0.98);
+
+  border-radius: 20px;
+
+  padding: clamp(18px, 2.4vh, 28px)
+           clamp(20px, 2.6vw, 32px);
+
+  box-sizing: border-box;
+
+  box-shadow:
+    0 24px 60px rgba(0,0,0,0.28);
+
+  border:
+    1px solid rgba(255,255,255,0.70);
+
+  /* 不產生內部捲軸 */
+  max-height: none;
+  overflow: visible;
+}
+
+
+/* 上方葉子 */
+.welcome-icon {
+  width: 48px;
+  height: 48px;
+
+  margin: 0 auto 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #eef8ef;
+
+  border-radius: 50%;
+
+  font-size: 25px;
+}
+
+
+/* 標題 */
+.welcome-title {
+  margin: 0;
+
+  text-align: center;
+
+  color: #685A56;
+
+  font-size: 25px;
+  font-weight: 800;
+
+  letter-spacing: 0.5px;
+}
+
+
+/* 開場文字 */
+.welcome-intro {
+  margin: 13px auto 20px;
+
+  max-width: 590px;
+
+  text-align: center;
+
+  color: #5f5a58;
+
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+
+.welcome-intro strong {
+  color: #3f7f55;
+}
+
+/* ============================================================
+   Street View 操作提示
+   ============================================================ */
+
+.streetview-hint {
+  position: absolute;
+
+  /* 跟小黃人對齊 */
+  top: 83px;
+  right: 66px;
+
+  z-index: 899;
+
+  padding: 7px 11px;
+
+  background: rgba(255,255,255,0.97);
+
+  color: #5f5a58;
+
+  border: 1px solid rgba(126,109,104,0.20);
+  border-radius: 8px;
+
+  box-shadow:
+    0 3px 10px rgba(0,0,0,0.15);
+
+  font-size: 11px;
+  font-weight: 700;
+
+  white-space: nowrap;
+
+  opacity: 0;
+  visibility: hidden;
+
+  transform: translateX(6px);
+
+  pointer-events: none;
+
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease,
+    visibility 0.25s ease;
+}
+
+
+.streetview-hint.show {
+  opacity: 1;
+  visibility: visible;
+
+  transform: translateX(0);
+}
+
+
+/* 指向小黃人的小箭頭 */
+
+.streetview-hint::after {
+  content: "";
+
+  position: absolute;
+
+  top: 50%;
+  right: -5px;
+
+  width: 9px;
+  height: 9px;
+
+  background: #ffffff;
+
+  border-top:
+    1px solid rgba(126,109,104,0.20);
+
+  border-right:
+    1px solid rgba(126,109,104,0.20);
+
+  transform:
+    translateY(-50%)
+    rotate(45deg);
+}
+
+
+/* ============================================================
+   Street View Pegman
+   ============================================================ */
+
+.streetview-pegman {
+  position: absolute;
+
+  top: 78px;
+
+  /* 讓中心對準右上圖層按鈕中心 */
+  right: 18px;
+
+  z-index: 900;
+
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255,255,255,0.96);
+
+  border: 1px solid rgba(0,0,0,0.10);
+  border-radius: 50%;
+
+  box-shadow:
+    0 2px 7px rgba(0,0,0,0.22);
+
+  cursor: grab;
+
+  user-select: none;
+  touch-action: none;
+
+  box-sizing: border-box;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+
+.streetview-pegman:hover {
+  transform: scale(1.06);
+
+  box-shadow:
+    0 3px 9px rgba(0,0,0,0.26);
+}
+
+
+.streetview-pegman.dragging {
+  cursor: grabbing;
+
+  transform: scale(1.10);
+
+  box-shadow:
+    0 4px 10px rgba(0,0,0,0.30);
+}
+
+
+/* ============================================================
+   Pegman 頭
+   ============================================================ */
+
+.pegman-head {
+  position: absolute;
+
+  top: 7px;
+  left: 50%;
+
+  width: 8px;
+  height: 8px;
+
+  background: #f9b233;
+
+  border-radius: 50%;
+
+  transform: translateX(-50%);
+
+  box-sizing: border-box;
+}
+
+
+/* ============================================================
+   Pegman 身體
+   ============================================================ */
+
+.pegman-body {
+  position: absolute;
+
+  top: 16px;
+  left: 50%;
+
+  width: 8px;
+  height: 11px;
+
+  background: #f9b233;
+
+  border-radius: 4px 4px 3px 3px;
+
+  transform: translateX(-50%);
+}
+
+
+/* ============================================================
+   Pegman 手
+   ============================================================ */
+
+.pegman-arm {
+  position: absolute;
+
+  top: 1px;
+
+  width: 3px;
+  height: 10px;
+
+  background: #f9b233;
+
+  border-radius: 3px;
+}
+
+
+.pegman-arm-left {
+  left: -3px;
+
+  transform: rotate(15deg);
+}
+
+
+.pegman-arm-right {
+  right: -3px;
+
+  transform: rotate(-15deg);
+}
+
+
+/* ============================================================
+   Pegman 腳
+   ============================================================ */
+
+.pegman-leg {
+  position: absolute;
+
+  top: 9px;
+
+  width: 3px;
+  height: 8px;
+
+  background: #f9b233;
+
+  border-radius: 3px;
+}
+
+
+.pegman-leg-left {
+  left: 0px;
+
+  transform: rotate(5deg);
+}
+
+
+.pegman-leg-right {
+  right: 0px;
+
+  transform: rotate(-5deg);
+}
+
+/* ============================================================
+   Street View 獨立視窗
+   ============================================================ */
+
+.streetview-modal {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 10000;
+
+  display: none;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 30px;
+
+  background:
+    rgba(20,20,20,0.38);
+
+  backdrop-filter: blur(3px);
+}
+
+.streetview-modal.show {
+  display: flex;
+}
+
+.streetview-window {
+  width:
+    min(
+      850px,
+      calc(100vw - 60px)
+    );
+
+  height:
+    min(
+      600px,
+      calc(100vh - 80px)
+    );
+
+  display: flex;
+  flex-direction: column;
+
+  background: #ffffff;
+
+  border-radius: 14px;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.30);
+}
+
+.streetview-header {
+  height: 46px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 14px;
+
+  color: #685A56;
+
+  font-size: 14px;
+  font-weight: 800;
+
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.streetview-close {
+  width: 30px;
+  height: 30px;
+
+  padding: 0;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #f1f5f9;
+
+  color: #475569;
+
+  font-size: 20px;
+
+  cursor: pointer;
+}
+
+.streetview-content {
+  flex: 1;
+
+  min-height: 0;
+}
+
+
+@media (max-width: 1024px) {
+
+  .streetview-window {
+    width: calc(100vw - 24px);
+
+    height: 62vh;
+  }
+
+  .streetview-modal {
+    padding: 12px;
+  }
+
+}
+
+/* ============================================================
+   使用步驟
+   ============================================================ */
+
+.welcome-steps {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+
+  margin-top: 8px;
+}
+
+
+.welcome-step {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 11px;
+
+  padding: 9px 11px;
+
+  border-radius: 10px;
+
+  color: #4b5563;
+
+  font-size: 13px;
+  line-height: 1.6;
+
+  transition: background 0.2s ease;
+}
+
+
+.welcome-step:hover {
+  background: #f7f8f5;
+}
+
+
+.welcome-step-number {
+  flex: 0 0 26px;
+
+  width: 26px;
+  height: 26px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #7E6D68;
+
+  color: #ffffff;
+
+  border-radius: 50%;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  margin-top: 1px;
+}
+
+
+.welcome-step strong {
+  color: #3f7f55;
+}
+
+
+/* ============================================================
+   資料來源說明
+   ============================================================ */
+
+.welcome-data-note {
+  margin-top: 17px;
+
+  padding: 12px 14px;
+
+  background: #eef8ef;
+
+  border:
+    1px solid #cfe5d2;
+
+  border-radius: 11px;
+
+  color: #4f6354;
+
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+
+.welcome-data-title {
+  margin-bottom: 4px;
+
+  color: #3f7f55;
+
+  font-size: 13px;
+  font-weight: 800;
+}
+
+
+/* 試作版提醒 */
+.welcome-warning {
+  margin-top: 12px;
+
+  color: #8a7770;
+
+  font-size: 11px;
+  line-height: 1.55;
+
+  text-align: center;
+}
+
+
+/* ============================================================
+   開始使用按鈕
+   ============================================================ */
+
+.welcome-start-btn {
+  width: 100%;
+
+  margin-top: 18px;
+
+  padding: 12px 20px;
+
+  border: none;
+  border-radius: 999px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #22a05a,
+      #15803d
+    );
+
+  color: #ffffff;
+
+  font-size: 15px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 6px 16px rgba(21,128,61,0.22);
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+
+.welcome-start-btn:hover {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 9px 20px rgba(21,128,61,0.28);
+}
+
+
+.welcome-start-btn span {
+  margin-left: 5px;
+}
+
+/* ============================================================
+   手機版：Street View Pegman
+   ============================================================ */
+
+@media (max-width: 1024px) {
+
+  .streetview-pegman {
+
+    /* 與圖層按鈕拉開距離 */
+    top: 182px;
+
+    /* 對準 Leaflet 圖層控制中心 */
+    right: 22px;
+
+    z-index: 900;
+  }
+
+
+  .streetview-hint {
+
+    /* 跟著小黃人一起下移 */
+    top: 187px;
+
+    /* 位於小黃人左側 */
+    right: 70px;
+
+    z-index: 899;
+  }
+
+}
+
+/* ============================================================
+   手機版
+   ============================================================ */
+
+/* ============================================================
+   手機版：路徑顯示彈出選單
+   ============================================================ */
+
+.mobile-path-popup {
+  display: none;
+}
+
+/* 路徑顯示視窗標題列 */
+.mobile-path-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 7px;
+}
+
+
+/* 標題 */
+.mobile-path-popup-header .mobile-path-popup-title {
+  margin-bottom: 0;
+
+  font-size: 13px;
+  font-weight: 800;
+
+  color: #685A56;
+}
+
+
+/* 關閉按鈕 */
+.mobile-path-popup-close {
+  width: 26px;
+  height: 26px;
+
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #f1f5f9;
+
+  color: #64748b;
+
+  font-size: 18px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+
+.mobile-path-popup-close:hover {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+@media (max-width: 1024px) {
+
+  .mobile-path-popup {
+    position: fixed;
+
+    right: 12px;
+
+    bottom: calc(
+      58px
+      + max(10px, env(safe-area-inset-bottom))
+      + 12px
+    );
+
+    width: 130px;
+
+    padding: 8px;
+
+    background: rgba(255,255,255,0.97);
+
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+
+    box-shadow:
+      0 6px 20px rgba(0,0,0,0.18);
+
+    z-index: 1400;
+
+    box-sizing: border-box;
+  }
+
+
+  .mobile-path-popup.show {
+    display: block;
+  }
+
+
+  .mobile-path-popup-title {
+    margin-bottom: 6px;
+
+    font-size: 12px;
+    font-weight: 800;
+
+    color: #685A56;
+
+    text-align: center;
+  }
+
+
+  .mobile-path-option {
+    width: 100%;
+
+    margin: 3px 0;
+    padding: 7px 8px;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    color: #5f5a58;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    cursor: pointer;
+  }
+
+
+  .mobile-path-option.active {
+    background: #3f7f55;
+
+    border-color: #3f7f55;
+
+    color: #ffffff;
+  }
+
+}
+
+@media (max-height: 600px) {
+
+  .welcome-card {
+    width: min(720px, calc(100vw - 24px));
+    padding: 13px 20px;
+  }
+
+  .welcome-icon {
+    display: none;
+  }
+
+  .welcome-title {
+    font-size: 19px;
+  }
+
+  .welcome-intro {
+    margin: 6px auto 8px;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .welcome-step {
+    padding: 3px 6px;
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  .welcome-data-note {
+    margin-top: 7px;
+    padding: 6px 9px;
+    font-size: 10px;
+  }
+
+  .welcome-warning {
+    margin-top: 6px;
+    font-size: 10px;
+  }
+
+  .welcome-start-btn {
+    margin-top: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+}
+
+@media (max-height: 800px) {
+
+  .welcome-card {
+    padding: 18px 24px;
+  }
+
+  .welcome-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 21px;
+    margin-bottom: 6px;
+  }
+
+  .welcome-title {
+    font-size: 21px;
+  }
+
+  .welcome-intro {
+    margin: 9px auto 12px;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .welcome-steps {
+    gap: 4px;
+  }
+
+  .welcome-step {
+    padding: 5px 8px;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .welcome-step-number {
+    width: 23px;
+    height: 23px;
+    flex-basis: 23px;
+  }
+
+  .welcome-data-note {
+    margin-top: 10px;
+    padding: 8px 11px;
+    line-height: 1.5;
+  }
+
+  .welcome-warning {
+    margin-top: 8px;
+  }
+
+  .welcome-start-btn {
+    margin-top: 11px;
+    padding: 10px 18px;
+  }
+}
+
+html,body{
+  height: 100%;
+  margin:0;
+  font-family:"Noto Sans TC","Segoe UI","Microsoft JhengHei",sans-serif;
+  background:var(--bg);
+  color:#111827;
+  padding: 0;          /* ✅ 很重要 */
+  width: 100%;         /* ✅ 確保撐滿 */
+  overflow-x: hidden;  /* ✅ 防止微小溢出造成白邊 */
+  overflow: hidden;
+}
+
+body {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+#infoView {
+  flex: 1 1 0;
+  min-height: 0;
+  height: auto;
+  flex-direction: column;
+  box-sizing: border-box;
+  display: none;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#infoView.active {
+  display: flex;
+}
+
+/* ============================================================
+   右側資訊面板：自動滿版
+   ============================================================ */
+
+/* 單一 NDVI / GVI */
+#infoView.mode-single{  justify-content:space-between;  gap:7px;}
+
+/* NDVI + GVI */
+#infoView.mode-both{  justify-content:space-between;  gap:3px;}
+
+/* ============================================================
+   桌機右側成果面板：依螢幕高度自動壓縮
+   ============================================================ */
+
+@media (min-width: 1025px) {
+
+  .panel-stats {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  #infoView {
+    flex: 1 1 0;
+    min-height: 0;
+  }
+
+}
+
+
+/* ---------- 一般較矮的桌機畫面 ---------- */
+@media (min-width: 1025px) and (max-height: 850px) {
+
+  .panel-stats {
+    padding: 9px;
+    gap: 5px;
+  }
+
+  .panel-tabs {
+    padding: 3px;
+  }
+
+  .panel-tab {
+    padding: 6px 4px;
+    font-size: 12px;
+  }
+
+  #infoView {
+    gap: 5px;
+  }
+
+  #infoView .stat-title {
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  #infoView .progress-wrap {
+    padding: 5px;
+  }
+
+  #infoView .progress-number {
+    font-size: 17px;
+    margin-bottom: 3px;
+  }
+
+  #infoView .progress-bar {
+    height: 15px;
+  }
+
+  #infoView .progress-fill {
+    height: 15px;
+    line-height: 15px;
+    font-size: 11px;
+  }
+
+  #infoView .time-box {
+    padding: 5px 6px;
+    gap: 3px;
+  }
+
+  #infoView .time-row {
+    font-size: 11px;
+    min-height: 18px;
+  }
+
+  #infoView .health-card {
+    padding: 4px 2px;
+  }
+
+  #infoView .health-card .muted {
+    font-size: 10px;
+  }
+
+  #infoView .health-value {
+    font-size: 11px;
+    margin-top: 2px;
+  }
+
+  #infoView .health-grid,
+  #infoView .health-extra-grid {
+    gap: 4px;
+  }
+
+  #infoView #heightSlider {
+    height: 6px;
+  }
+
+}
+
+/* ============================================================
+   單一指標模式：桌機成果資訊放大
+   ============================================================ */
+
+/* 各區塊標題 */
+#infoView.mode-single .stat-title {
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+
+/* reNDVI / GVI 核心百分比 */
+#infoView.mode-single .progress-number {
+  font-size: 22px;
+  margin-bottom: 6px;
+}
+
+
+/* 核心指標內容 */
+#infoView.mode-single .progress-wrap {
+  padding: 9px;
+}
+
+
+/* 負碳存摺、時間估計外框 */
+#infoView.mode-single .time-box {
+  padding: 9px;
+}
+
+
+/* 負碳存摺、時間估計每一列 */
+#infoView.mode-single .time-row {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+
+/* 健康步帳卡片 */
+#infoView.mode-single .health-card {
+  padding: 8px 4px;
+}
+
+
+/* 健康步帳：最短路徑、高綠暴露路徑、高綠視率路徑、卡路里、壽命延長 */
+#infoView.mode-single .health-card .muted {
+  font-size: 13px;
+}
+
+
+/* 健康步帳：步數、卡路里、壽命等數值 */
+#infoView.mode-single .health-value {
+  font-size: 15px;
+}
+
+
+/* 身高設定等一般文字 */
+#infoView.mode-single .muted {
+  font-size: 14px;
+}
+
+/* ---------- 雙指標：自動壓縮 ---------- */
+
+#infoView.mode-both .stat-title{  font-size:12px;  line-height:1.25;}
+#infoView.mode-both .progress-wrap{  padding:5px;}
+#infoView.mode-both .progress-number{  font-size:17px;  margin-bottom:3px;}
+#infoView.mode-both .progress-bar{  height:15px;}
+
+#infoView.mode-both .progress-fill{  line-height:15px;  font-size:11px;}
+#infoView.mode-both .time-box{  padding:4px 6px;  gap:3px;}
+#infoView.mode-both .time-row{  font-size:11px;}
+#infoView.mode-both .health-card{  padding:4px 2px;}
+#infoView.mode-both .health-card .muted{  font-size:10px;}
+#infoView.mode-both .health-value{  font-size:11px;}
+#infoView.mode-both #heightSlider{  height:6px;}
+
+
+.panel-stats .time-box,
+.panel-stats .progress-wrap {
+  padding: 7px;
+}
+
+.layout {  flex: 1;  min-height: 0;  display: flex;  gap: 12px;  padding: 12px;  box-sizing: border-box;}
+.panel-controls{  width:260px;  height:100%;  box-sizing:border-box;  background:var(--panel);  border-radius:12px;  padding:14px;  box-shadow:0 6px 18px rgba(2,6,23,0.06);  display:flex;  flex-direction:column;  justify-content:space-between;  gap:6px;}
+.panel-controls .title{font-weight:700; color:var(--accent-2); font-size:20px;}
+.infoBox { background:#f8fafc; border-radius:8px; padding:10px; color:#0f172a; font-weight:600; font-size:13px; min-height:48px; white-space:pre-line; }
+label{  font-size:13px;  color:var(--muted);  margin-top:2px;  display:block;}
+
+/* 修改後的輸入框樣式 */
+input, select, .btn { 
+    width: 100%; 
+    padding: 8px 12px; 
+    border-radius: 999px; 
+    border: 1px solid #e2e8f0; 
+    font-weight: 600; 
+    background: #fff; 
+    cursor: pointer;
+
+    
+    /* 關鍵屬性：確保 padding 不會撐開寬度 */
+    box-sizing: border-box; 
+    
+    /* 增加一點點間距感 */
+    margin-bottom: 4px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+input:focus {
+    border-color: var(--accent-2);
+    box-shadow: 0 0 0 2px rgba(21,128,61,0.12);
+}
+
+/* 針對地址搜尋區塊的容器微調 */
+.addr-search-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.btn {
+  background: linear-gradient(
+    180deg,
+    #22a05a,
+    #15803d
+  );
+
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(21,128,61,0.15);
+
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+/* 規劃路徑按鈕 */
+#dualPathBtn {
+  text-align: center;
+  font-weight: 800;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(21,128,61,0.20);
+}
+
+
+
+.btn.secondary {  background: #DFE200;  color: #383331;  box-shadow: 0 4px 12px rgba(126, 109, 104, 0.18);}
+.btn.ghost { background:white; color:var(--accent-2); border:1px solid rgba(37,99,235,0.10); box-shadow:none; }
+
+/* ============================================================
+   路徑顯示切換
+   ============================================================ */
+
+.route-display-control {
+  margin-top: 6px;
+}
+
+.route-display-title {
+  margin-bottom: 5px;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  color: #685A56;
+}
+
+.route-display-buttons {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 5px;
+}
+
+.route-display-btn {
+  width: 100%;
+
+  padding: 6px 4px;
+
+  border: 1px solid #d8ded5;
+  border-radius: 999px;
+
+  background: #ffffff;
+
+  color: #5f5a58;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.route-display-btn:hover {
+  background: #f2f8ef;
+}
+
+.route-display-btn.active {
+  background: #3f7f55;
+
+  border-color: #3f7f55;
+
+  color: #ffffff;
+}
+.map-wrap { flex:1 1 0; min-height: 400px; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 6px 18px rgba(2,6,23,0.06); display:flex; flex-direction:column; position:relative; }
+/* 地圖全螢幕模式 */
+.map-wrap:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+  margin: 0;
+}
+
+.map-wrap:fullscreen #map {
+  width: 100%;
+  height: 100%;
+}
+
+/* ============================================================
+   左側控制面板字體
+   ============================================================ */
+
+.panel-controls .panel-title {
+  font-size: 18px;
+  font-weight: 800;
+
+  color: #685A56;
+}
+
+
+/* 起終點狀態 */
+
+.panel-controls .infoBox {
+  font-size: 14px;
+
+  line-height: 1.5;
+}
+
+
+/* 一般標籤 */
+
+.panel-controls label {
+  font-size: 14px;
+
+  font-weight: 700;
+
+  color: #685A56;
+}
+
+
+/* 按鈕 */
+
+.panel-controls .btn {
+  font-size: 14px;
+}
+
+
+/* 輸入框 */
+
+.panel-controls input,
+.panel-controls select {
+  font-size: 14px;
+}
+
+
+/* 路徑顯示標題 */
+
+.panel-controls .route-display-title {
+  font-size: 14px;
+}
+
+
+/* 全部 / 綠暴露 / 綠視率 */
+
+.panel-controls .route-display-btn {
+  font-size: 13px;
+}
+
+
+/* 底部提示文字 */
+
+.panel-controls > .muted {
+  font-size: 12px;
+
+  line-height: 1.5;
+}
+
+/* ============================================================
+   路徑圖例
+   ============================================================ */
+
+.route-legend {
+  min-width: 125px;
+
+  padding: 9px 11px;
+
+  background: rgba(255,255,255,0.94);
+
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+
+  box-shadow:
+    0 3px 12px rgba(0,0,0,0.14);
+
+  font-size: 12px;
+
+  color: #4b5563;
+}
+
+.route-legend-title {
+  margin-bottom: 6px;
+
+  color: #685A56;
+
+  font-weight: 800;
+}
+
+.route-legend-row {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  margin: 5px 0;
+}
+
+.route-legend-line {
+  display: inline-block;
+
+  width: 28px;
+  height: 5px;
+
+  border-radius: 999px;
+}
+
+
+/* ============================================================
+   路線著色漸層圖例
+   ============================================================ */
+.route-color-legend{
+  min-width:190px;
+  padding:9px 11px;
+  background:rgba(255,255,255,.96);
+  border:1px solid #e2e8f0;
+  border-radius:9px;
+  box-shadow:0 3px 12px rgba(0,0,0,.14);
+  color:#4b5563;
+  box-sizing:border-box;
+}
+.route-color-legend-title{
+  margin-bottom:6px;
+  color:#685A56;
+  font-size:12px;
+  font-weight:800;
+  white-space:nowrap;
+}
+.route-color-legend-gradient{
+  width:180px;
+  max-width:100%;
+  height:9px;
+  border-radius:999px;
+  border:1px solid rgba(0,0,0,.08);
+  box-sizing:border-box;
+}
+.route-color-legend-labels{
+  width:180px;
+  max-width:100%;
+  display:flex;
+  justify-content:space-between;
+  gap:6px;
+  margin-top:3px;
+  color:#475569;
+  font-size:10px;
+  font-weight:700;
+  white-space:nowrap;
+}
+@media (max-width:1024px){
+  .leaflet-bottom.leaflet-left .route-color-legend{
+    order:2 !important;
+    flex:0 0 100% !important;
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    padding:7px 9px !important;
+    box-sizing:border-box !important;
+  }
+  .leaflet-bottom.leaflet-left .route-color-legend-title{
+    margin-bottom:4px !important;
+    font-size:10.5px !important;
+  }
+  .leaflet-bottom.leaflet-left .route-color-legend-gradient,
+  .leaflet-bottom.leaflet-left .route-color-legend-labels{
+    width:100% !important;
+    max-width:none !important;
+  }
+  .leaflet-bottom.leaflet-left .route-color-legend-gradient{
+    height:7px !important;
+  }
+  .leaflet-bottom.leaflet-left .route-color-legend-labels{
+    font-size:9px !important;
+  }
+  .leaflet-bottom.leaflet-left .ndvi-legend,
+  .leaflet-bottom.leaflet-left .rendvi-road-legend,
+  .leaflet-bottom.leaflet-left .gvi-road-legend{
+    order:3 !important;
+  }
+}
+
+/* ============================================================
+   地圖全螢幕按鈕
+   ============================================================ */
+
+.leaflet-control-fullscreen {  width: 34px;  height: 34px;
+  background: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 20px;
+  line-height: 34px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.25);
+}
+
+.leaflet-control-fullscreen:hover {
+  background: #f4f4f4;
+}
+
+#map { flex:1; min-height:0; }
+.panel-stats {
+  width: 300px;
+  align-self: stretch;
+  min-height: 0;
+  box-sizing: border-box;
+
+  background: var(--panel);
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.06);
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #0f172a;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ============================================================
+   右側面板：視窗切換
+   ============================================================ */
+
+.panel-tabs {
+  display: flex;
+  gap: 6px;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.panel-tab {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  padding: 9px 6px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.panel-tab:hover {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.panel-tab.active {
+  background: #ffffff;
+  color: var(--accent-2);
+  box-shadow: 0 2px 6px rgba(15,23,42,0.08);
+}
+
+/* 分頁內容 */
+.panel-view {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+}
+
+.panel-view.active {
+  display: flex;
+}
+
+#streetView {
+  width: 100%;
+  height: 100%;
+}
+
+/* 手機版 */
+@media (max-width: 1024px){
+
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .layout {
+    position: relative;
+    width: 100%;
+    height: 100dvh;
+    padding: 0;
+    display: block;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  /* ---------------- 地圖 ---------------- */
+
+  .map-wrap {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  #map {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ---------------- 左側控制面板 ---------------- */
+
+  .panel-controls {
+    position: absolute;
+
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+
+    width: auto !important;
+
+    max-height: 60vh;
+
+    z-index: 1200;
+
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+
+    overflow-y: auto;
+  }
+
+  /* ---------------- 右側資訊面板 ---------------- */
+
+  .panel-stats{
+    width:300px;
+    align-self:stretch;
+    min-height:0;
+    box-sizing:border-box;
+    background:var(--panel);
+    padding:12px;
+    border-radius:12px;
+    box-shadow:0 6px 18px rgba(2,6,23,0.06);
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    color:#0f172a;
+    overflow:hidden;
+    position:relative;
+  }
+
+}
+
+.stat-title { font-weight:700; color:var(--accent-2); font-size:14px; }
+.progress-wrap { background:#eef2f7; padding:8px; border-radius:10px; }
+/* ============================================================
+   reNDVI / GVI 核心成果指標
+   ============================================================ */
+
+/* 外層 */
+.green-gain-grid {  display: grid;  grid-template-columns: 1fr;  gap: 7px;  width: 100%;  box-sizing: border-box;}
+
+/* ============================================================
+   reNDVI 卡片
+   ============================================================ */
+
+#rendviBlock {  min-width: 0;  background: #eef8ef;  border: 1px solid #b7dfbd;  border-radius: 10px;  padding: 8px;  box-sizing: border-box;  box-shadow:    0 2px 8px rgba(76, 162, 108, 0.10);}
+#rendviBlock .stat-title {  color: #3f7f55;}
+#rendviBlock .progress-wrap {  background: rgba(255,255,255,0.72);}
+
+/* ============================================================
+   GVI 卡片
+   ============================================================ */
+#regviBlock {  min-width: 0;  background: #f3f8e8;  border: 1px solid #cedda6;  border-radius: 10px;  padding: 8px;  box-sizing: border-box;  box-shadow:    0 2px 8px rgba(139, 171, 76, 0.10);}
+#regviBlock .stat-title {  color: #667d35;}
+#regviBlock .progress-wrap {  background: rgba(255,255,255,0.72);}
+
+/* ============================================================
+   reNDVI + GVI 比較模式
+   兩個指標共用同一個外框
+   ============================================================ */
+
+#infoView.mode-both .green-gain-grid {
+
+  grid-template-columns: 1fr;
+
+  gap: 6px;
+
+  background: #eef8ef;
+
+  border: 1px solid #b7dfbd;
+
+  border-radius: 10px;
+
+  padding: 8px;
+
+  box-sizing: border-box;
+
+  box-shadow:
+    0 2px 8px rgba(76, 162, 108, 0.10);
+}
+
+
+/* 比較模式下，reNDVI 不再自己有一個框 */
+#infoView.mode-both #rendviBlock {
+
+  background: transparent;
+
+  border: none;
+
+  border-radius: 0;
+
+  padding: 0;
+
+  box-shadow: none;
+}
+
+
+/* 比較模式下，GVI 不再自己有一個框 */
+#infoView.mode-both #regviBlock {
+
+  background: transparent;
+
+  border: none;
+
+  border-radius: 0;
+
+  padding: 0;
+
+  box-shadow: none;
+}
+/* ============================================================
+   reNDVI + GVI 比較模式
+   改成上下兩排，不縮小卡片
+   ============================================================ */
+
+#infoView.mode-both .green-gain-grid {  grid-template-columns: 1fr;  gap: 7px;}
+.progress-number { font-size:20px; font-weight:700; color:#0f172a; margin-bottom:6px; }
+.progress-bar { height:18px; background:#e6edf6; border-radius:999px; overflow:hidden; }
+.progress-fill { height:100%; width:0%; background: linear-gradient(90deg,#10b981,#a4ee73); text-align:center; color:#fff; font-weight:700; line-height:18px; }
+.time-box { background:#f8fafc; padding:8px; border-radius:10px; display:flex; flex-direction:column; gap:6px; }
+.time-row { display:flex; justify-content:space-between; align-items:center; font-weight:700; }
+.muted { color:var(--muted); font-weight:600; font-size:13px; }
+.legend { display:flex; gap:8px; align-items:center; font-size:13px; color:var(--muted); margin-top:4px; }
+.dot { width:12px; height:12px; border-radius:50%; display:inline-block; margin-right:6px; }
+
+.step-diff {
+  text-align:center;
+  color:#374151;
+  font-weight:600;
+  font-size:12px;
+  margin-top:4px;
+}
+
+/* 頁首容器優化 */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background: #7E6D68;
+  color: #fff;
+
+  padding: 10px 22px;
+  margin: 8px 12px 0;
+
+  border-radius: 10px;
+
+  box-shadow:
+    0 4px 14px rgba(126, 109, 104, 0.20);
+
+  gap: 20px;
+}
+
+
+/* ============================================================
+   左側：嘉義市 Logo + 標題
+   ============================================================ */
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  min-width: 0;
+}
+
+
+/* 嘉義市 Logo */
+
+.logo-chiayi {
+  width: 46px;
+  height: 46px;
+
+  object-fit: contain;
+  flex-shrink: 0;
+
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.12));
+}
+
+
+/* 標題 */
+
+.title-container {
+  display: flex;
+  align-items: center;
+
+  min-width: 0;
+}
+
+
+.main-title {
+  font-size: 20px;
+  font-weight: 700;
+
+  letter-spacing: 1px;
+
+  margin: 0;
+
+  white-space: nowrap;
+
+  text-shadow:
+    0 1px 3px rgba(0,0,0,0.18);
+}
+
+
+/* 試作版 */
+
+.main-title .version-tag {
+  font-size: 9px;
+  font-weight: 500;
+
+  color: #e4e4e3;
+
+  margin-left: 6px;
+
+  padding: 1px 5px;
+
+  border: 1px solid rgba(223,226,0,0.50);
+  border-radius: 4px;
+}
+
+
+/* ============================================================
+   右側：研究團隊 + 合作單位 Logo
+   ============================================================ */
+
+/* 整個右側：研究團隊 + Logo 維持同一排 */
+.header-right {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 10px;
+
+  min-width: 0;
+
+  white-space: nowrap;
+}
+
+/* ============================================================
+   左側控制面板分隔線
+   ============================================================ */
+
+.panel-divider {
+  width: 100%;
+  height: 1px;
+
+  margin: 7px 0;
+
+  background: #e5e7eb;
+
+  flex-shrink: 0;
+}
+
+
+/* 地址按鈕橫排 */
+
+.addr-button-row {
+  display: flex;
+
+  gap: 8px;
+}
+
+.addr-button-row .btn {
+  flex: 1;
+}
+
+
+/* ============================================================
+   Stadia 地址自動完成下拉選單
+   ============================================================ */
+.addr-autocomplete-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.addr-autocomplete-wrap #addrInput {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.addr-suggestions {
+  display: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 5px);
+  max-height: 300px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: rgba(255,255,255,0.99);
+  border: 1px solid #d8ded7;
+  border-radius: 10px;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.18);
+  z-index: 5000;
+}
+
+.addr-suggestions.show {
+  display: block;
+}
+
+.addr-suggestion-item {
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-bottom: 1px solid #edf0ed;
+  background: #fff;
+  color: #26352c;
+  text-align: left;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.addr-suggestion-item:last-child {
+  border-bottom: 0;
+}
+
+.addr-suggestion-item:hover,
+.addr-suggestion-item.active {
+  background: #f3f8e4;
+}
+
+.addr-suggestion-name {
+  display: block;
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 800;
+  color: #27382d;
+}
+
+.addr-suggestion-context {
+  display: block;
+  margin-top: 3px;
+  font-size: 11px;
+  line-height: 1.35;
+  color: #7a817c;
+  white-space: normal;
+}
+
+.addr-suggestion-status {
+  padding: 10px 12px;
+  font-size: 11px;
+  color: #7a817c;
+}
+
+/* ============================================================
+   路線綠意推薦點
+   ============================================================ */
+.green-spot-marker {
+  background: transparent;
+  border: 0;
+}
+
+.green-spot-dot {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #9fcf18;
+  border: 3px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+  color: #365314;
+  font-size: 9px;
+  font-weight: 900;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.green-spot-dot:hover {
+  transform: scale(1.18);
+  box-shadow: 0 3px 11px rgba(0,0,0,0.42);
+}
+
+.green-spot-popup {
+  min-width: 165px;
+  line-height: 1.55;
+}
+
+.green-spot-popup-title {
+  font-weight: 900;
+  color: #3f6212;
+  margin-bottom: 3px;
+}
+
+.green-spot-popup-note {
+  color: #64748b;
+  font-size: 11px;
+}
+
+.green-spot-tooltip {
+  background: rgba(255,255,255,0.97);
+  border: 1px solid rgba(100,116,139,0.20);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(15,23,42,0.18);
+  padding: 8px 10px;
+  color: #334155;
+}
+
+.green-spot-tooltip::before {
+  border-top-color: rgba(255,255,255,0.97) !important;
+}
+
+.green-spot-tooltip .green-spot-popup {
+  min-width: 185px;
+}
+
+.green-spot-tooltip .green-spot-popup-title {
+  margin-bottom: 5px;
+}
+
+@media (max-width: 1024px) {
+  .addr-suggestions {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    top: auto;
+    max-height: min(42vh, 330px);
+    z-index: 10050;
+  }
+
+  .addr-suggestion-item {
+    padding: 11px 13px;
+  }
+
+  .addr-suggestion-name {
+    font-size: 14px;
+  }
+
+  .addr-suggestion-context {
+    font-size: 12px;
+  }
+}
+
+/* ============================================================
+   研究團隊
+   ============================================================ */
+
+/* 桌機版：「研究團隊」不要換成兩行 */
+.team-label br {
+  display: none;
+}
+
+
+.team-info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-shrink: 0;
+  min-height: 32px;
+  white-space: nowrap;
+
+  /* 研究團隊底色 */
+  background: rgba(74, 62, 58, 0.42);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 8px;
+  padding: 4px 10px;
+  box-sizing: border-box;
+  box-shadow:
+    0 2px 6px rgba(0,0,0,0.08);
+}
+
+
+.team-label {
+  flex-shrink: 0;
+
+  margin-right: 7px;
+
+  font-size: 12px;
+  line-height: 1.4;
+
+  color: #ffffff;
+  font-weight: 700;
+
+  white-space: nowrap;
+
+  /* 只讓「研究團隊」有底色 */
+  background: rgba(74, 62, 58, 0.48);
+
+  border: 1px solid rgba(255,255,255,0.14);
+
+  border-radius: 6px;
+
+  padding: 4px 7px;
+
+  box-sizing: border-box;
+}
+
+
+.team-members {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+
+  align-items: center;
+
+  font-size: 12px;
+  line-height: 1.4;
+
+  color: rgba(255,255,255,0.92);
+
+  white-space: nowrap;
+}
+
+
+.team-member {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+
+/* ============================================================
+   實驗室 / 成大 / TASA Logo
+   ============================================================ */
+
+.partner-logos {
+  display: flex;
+  flex-direction: row;
+
+  align-items: center;
+  justify-content: flex-end;
+
+  flex-shrink: 0;
+
+  gap: 6px;
+}
+
+
+.partner-logo {
+  height: 32px;
+  width: auto;
+
+  object-fit: contain;
+
+  flex-shrink: 0;
+
+  background: transparent;
+
+  border-radius: 0;
+
+  padding: 0;
+
+  box-sizing: border-box;
+}
+
+
+/* ============================================================
+   健康步帳：四格共用同一個底
+   ============================================================ */
+
+.health-account-box {
+
+  background: #f8fafc;
+
+  padding: 8px;
+
+  border-radius: 10px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+
+  box-sizing: border-box;
+}
+/* ============================================================
+   健康步帳：卡片式四宮格
+   ============================================================ */
+
+.health-grid {
+  display: grid;
+  gap: 6px;
+}
+
+
+/* 一般模式：兩欄 */
+.health-grid.two-cols {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+
+/* reNDVI + GVI 比較模式：三欄 */
+.health-grid.three-cols {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+
+/* 卡路里 + 壽命延長：兩欄 */
+.health-extra-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+
+/* 每一格卡片 */
+.health-card {
+  min-width: 0;
+
+  text-align: center;
+
+  border: 1px solid #eeeeee;
+
+  padding: 6px 3px;
+
+  border-radius: 7px;
+
+  background: #ffffff;
+
+  box-sizing: border-box;
+}
+
+
+/* 卡片上方文字 */
+.health-card .muted {
+  font-size: 11px;
+
+  color: #4b5563;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+
+/* 卡片數值 */
+.health-value {
+  margin-top: 3px;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  white-space: nowrap;
+}
+
+
+/* 路徑提示 */
+.route-hint {
+  margin-top: 4px;
+
+  padding: 6px 8px;
+
+  border-radius: 7px;
+
+  background: #f8fafc;
+
+  color: var(--muted);
+
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+/* ============================================================
+   手機版：懸浮 Header
+   ============================================================ */
+
+@media (max-width: 1024px) {
+
+  header {
+    position: fixed;
+
+    top: 8px;
+    left: 10px;
+    right: 10px;
+
+    width: auto;
+
+    margin: 0;
+
+    padding: 8px 10px;
+
+    z-index: 1500;
+
+    background: rgba(126, 109, 104, 0.94);
+
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+
+    border-radius: 14px;
+
+    box-shadow:
+      0 5px 18px rgba(0, 0, 0, 0.20);
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: 6px;
+
+    box-sizing: border-box;
+  }
+
+
+  /* ============================================================
+     第一排：嘉義市 Logo + 系統名稱
+     ============================================================ */
+
+  .header-left {
+    width: 100%;
+
+    display: flex;
+    flex-direction: row;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    text-align: left;
+  }
+
+
+  .logo-chiayi {
+    width: 34px;
+    height: 34px;
+
+    flex-shrink: 0;
+  }
+
+
+  .title-container {
+    min-width: 0;
+  }
+
+
+  .main-title {
+    margin: 0;
+
+    font-size: 16px;
+    line-height: 1.25;
+
+    white-space: nowrap;
+
+    text-align: left;
+
+    letter-spacing: 0.5px;
+  }
+
+
+  .main-title .version-tag {
+    font-size: 8px;
+
+    margin-left: 3px;
+
+    padding: 1px 4px;
+  }
+
+
+  /* ============================================================
+     第二排：研究團隊 + 合作 Logo
+     ============================================================ */
+
+  .header-right {
+    width: 100%;
+
+    display: flex;
+    flex-direction: row;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    padding-top: 5px;
+
+    border-top:
+      1px solid rgba(255,255,255,0.20);
+
+    box-sizing: border-box;
+  }
+
+
+  /* ============================================================
+     研究團隊
+     ============================================================ */
+
+  .team-info {
+    flex: 1;
+    min-width: 0;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: left;
+    line-height: 1.35;
+    background: rgba(74, 62, 58, 0.38);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 4px 7px;
+    box-sizing: border-box;
+  }
+
+
+  /* 研究 / 團隊固定兩行 */
+  .team-label {
+    flex: 0 0 32px;
+
+    margin: 0 7px 0 0;
+
+    font-size: 10px;
+    line-height: 1.25;
+
+    text-align: center;
+
+    white-space: nowrap;
+
+    color: #ffffff;
+
+    background: rgba(74, 62, 58, 0.48);
+
+    border: 1px solid rgba(255,255,255,0.14);
+
+    border-radius: 5px;
+
+    padding: 4px 3px;
+
+    box-sizing: border-box;
+  }
+
+  .team-label br {
+    display: initial;
+  }
+
+
+  /* 姓名區可以換行 */
+  .team-members {
+    flex: 1;
+
+    min-width: 0;
+
+    display: flex;
+    flex-wrap: wrap;
+
+    align-items: center;
+
+    font-size: 10px;
+    line-height: 1.45;
+
+    white-space: normal;
+  }
+
+
+  /* 每個姓名本身禁止被切開 */
+  .team-member {
+    display: inline-block;
+
+    white-space: nowrap;
+  }
+
+  .team-label br {
+    display: block;
+  }
+
+
+  /* ============================================================
+     合作單位 Logo
+     ============================================================ */
+
+  .partner-logos {
+    flex: 0 0 auto;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 5px;
+  }
+
+
+  .partner-logo {
+    height: 21px;
+    width: auto;
+
+    object-fit: contain;
+
+    flex-shrink: 0;
+  }
+
+}
+
+#creditBox {
+  position: absolute;
+  bottom: 10px;
+  right: 18px;
+
+  font-size: 13px;
+  color: rgba(0,0,0,0.6);
+
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(4px);
+
+  padding: 4px 8px;
+  border-radius: 6px;
+
+  letter-spacing: 0.5px;
+}
+
+/* 1. 鎖定地圖右上角的容器，微調它的位置，避開功能列 */
+.leaflet-top.leaflet-right {
+  top: 12px !important;
+  right: 12px !important;
+
+  /* 永遠蓋在 Pegman 上方 */
+  z-index: 1100 !important;
+}
+
+/* 2. 修復被全域 input 撐爆的 Leaflet 內部單選鈕 */
+.leaflet-control-layers input[type="checkbox"],
+.leaflet-control-layers input[type="radio"] {
+    width: auto !important;       /* 🟢 關鍵：解除 width: 100% 的魔咒 */
+    display: inline-block !important;
+    margin: 0 6px 0 0 !important; /* 讓小圓點/小方塊跟文字有漂亮的間距 */
+    cursor: pointer;
+    box-shadow: none !important;  /* 拔除藍色發光陰影 */
+}
+
+/* 3. 修復被全域 label 影響的選單文字 */
+.leaflet-control-layers label {
+    display: flex !important;     /* 讓小圓點和文字完美水平對齊 */
+    align-items: center !important;
+    width: auto !important;       /* 🟢 關鍵：解除寬度撐滿 */
+    margin: 4px 0 !important;    /* 選項與選項之間的上下間距 */
+    padding: 0 !important;
+    color: #334155 !important;    /* 質感深灰色 */
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    cursor: pointer;
+}
+
+/* 4. 優化展開後的選單外觀，防止在小螢幕被切掉 */
+.leaflet-control-layers-expanded {
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    padding: 8px 12px !important;
+    background-color: #ffffff !important;
+    min-width: 120px !important;  /* 確保寬度適中 */
+}
+
+/* 🟢 修正版：預設完全隱藏關閉按鈕（不管電腦還是手機，未展開前都絕不顯示） */
+.leaflet-control-layers-close-btn {
+    display: none !important;
+}
+
+.panel-close {  display: none;}
+
+.secondary-stat-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #766f6c;
+}
+
+.route-time-box {
+  padding: 7px 8px !important;
+  gap: 5px;
+}
+
+.route-time-box .time-row {
+  font-size: 14px;
+  font-weight: 600;
+  min-height: 24px;
+}
+
+.route-time-box .dot{
+  width:9px;
+  height:9px;
+  margin-right:5px;
+}
+
+/* ============================================================
+   桌機版：規劃路徑按鈕置中
+   ============================================================ */
+
+
+/* 🟢 當處於手機版（1024px以下），且選單「真正被展開」時，才啟動關閉按鈕 */
+@media (max-width: 1200px) {
+    /* 當選單展開時，微調容器樣式 */
+    .leaflet-control-layers-expanded {
+        position: relative !important;
+        padding-top: 35px !important; /* 往下推，幫頂部的關閉按鈕留位子 */
+    }
+    
+    /* 關鍵：只有在 .leaflet-control-layers-expanded 裡面的關閉按鈕才會顯示！ */
+    .leaflet-control-layers-expanded .leaflet-control-layers-close-btn {
+        display: block !important; /* 真正點開後才現身 */
+        position: absolute;
+        top: 6px;
+        right: 8px;
+        background: #f1f5f9;
+        border: none;
+        color: #4b5563;
+        font-weight: 700;
+        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: 6px;
+        cursor: pointer;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        width: auto !important; /* 確保不被全域 input 影響寬度 */
+    }
+}
+
+
+/* 手機版：地圖 + 可收合的底部抽屜 */
+@media (max-width: 1024px) {
+  .layout {
+    flex: 1;
+
+    width: 100%;
+    height: 100dvh;
+
+    min-height: 0;
+
+    padding: 0;
+
+    position: relative;
+
+    display: block;
+
+    overflow: hidden;
+
+    box-sizing: border-box;
+  }
+  .map-wrap {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    z-index: 1;
+  }
+
+  /* 預設不開啟任何抽屜，地圖可完整點擊 */
+  .panel-controls,
+  .panel-stats {
+    display: none;
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    bottom: 12px;
+
+    width: auto;
+    height: auto;
+    max-height: 58vh;
+
+    z-index: 1200;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    border-radius: 16px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+  }
+
+  /* 只有被 JavaScript 加上此 class 的面板才顯示 */
+  .panel-controls.mobile-panel-open,
+  .panel-stats.mobile-panel-open {
+    display: flex !important;
+  }
+
+  .panel-controls {
+    gap: 8px;
+  }
+
+  .panel-stats {
+    padding: 12px;
+  }
+
+  .panel-close {
+    display: block;
+    position: absolute;
+    top: 8px;
+    right: 10px;
+
+    width: 30px;
+    height: 30px;
+    padding: 0;
+
+    border: none;
+    border-radius: 50%;
+    background: #f1f5f9;
+    color: #475569;
+
+    font-size: 22px;
+    line-height: 30px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .panel-controls,
+  .panel-stats {
+    padding-top: 14px;
+  }
+
+  .panel-controls .panel-title {
+    padding-right: 42px;
+  }
+
+  .panel-close {
+    display: block;
+    position: absolute;
+    top: 7px;
+    right: 8px;
+    z-index: 10;
+
+    width: 30px;
+    height: 30px;
+    padding: 0;
+
+    border: none;
+    border-radius: 50%;
+    background: #f1f5f9;
+    color: #475569;
+
+    font-size: 22px;
+    line-height: 30px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  /* 手機版開啟資訊面板時，保留足夠高度給 Google 街景 */
+  .panel-stats.mobile-panel-open {
+    height: 58vh;
+  }
+
+  }
+
+@media (max-width: 1024px) {
+
+  .leaflet-top.leaflet-left,
+  .leaflet-top.leaflet-right {
+    top: 115px !important;
+  }
+
+  .mobile-reset-btn {
+    color: #b45353;
+  }
+} 
+
+@media (max-width: 1024px) {
+
+  .panel-controls #dualPathBtn,
+  .panel-controls #resetBtn {
+    display: none;
+  }
+
+}
+
+@media (max-width: 1024px) {
+
+  .ndvi-legend,
+  .gvi-road-legend {
+
+    margin-bottom: calc(
+      58px
+      + max(10px, env(safe-area-inset-bottom))
+      + 14px
+    ) !important;
+
+  }
+
+}
+
+@media (max-width: 1024px) {
+  .leaflet-control-fullscreen {
+    display: block !important;
+  }
+}
+
+
+/* ============================================================
+   手機版：成果面板
+   固定在 Header 下方、底部功能列上方
+   ============================================================ */
+
+@media (max-width: 1024px) {
+
+  .panel-stats.mobile-panel-open {
+
+    /* 上面避開懸浮 Header */
+    top: 125px;
+
+    /* 下面避開底部功能列 */
+    bottom: calc(
+      58px
+      + max(10px, env(safe-area-inset-bottom))
+      + 18px
+    );
+
+    /* 左右保留空間 */
+    left: 10px;
+    right: 10px;
+
+    width: auto;
+
+    /* 不再用 72vh */
+    height: auto;
+    max-height: none;
+
+    overflow: hidden;
+
+    box-sizing: border-box;
+  }
+
+
+  /* 路徑資訊本身可以上下滑 */
+  #infoView {
+    flex: 1;
+
+    min-height: 0;
+
+    height: auto;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding-bottom: 12px;
+
+    -webkit-overflow-scrolling: touch;
+  }
+
+}
+/* ============================================================
+   手機版底部操作列
+   ============================================================ */
+
+.mobile-bottom-bar,
+.mobile-mode-popup {
+  display: none;
+}
+
+
+
+
+@media (max-width: 1024px) {
+
+  .mobile-bottom-bar {
+    position: fixed;
+
+    left: 10px;
+    right: 10px;
+
+    bottom: max(
+      10px,
+      env(safe-area-inset-bottom)
+    );
+
+    height: 58px;
+
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+
+    background: rgba(255,255,255,0.96);
+
+    border: 1px solid rgba(226,232,240,0.9);
+    border-radius: 16px;
+
+    box-shadow:
+      0 6px 20px rgba(0,0,0,0.18);
+
+    backdrop-filter: blur(8px);
+
+    z-index: 1300;
+
+    padding: 5px;
+    box-sizing: border-box;
+  }
+
+
+  .mobile-bottom-btn {
+    border: none;
+    background: transparent;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 2px;
+
+    padding: 3px;
+
+    color: #685A56;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    border-radius: 11px;
+  }
+
+
+  .mobile-btn-icon {
+    font-size: 19px;
+    line-height: 1;
+  }
+
+
+  /* 規劃按鈕特別強調 */
+  .mobile-route-main {
+    background: linear-gradient(
+      180deg,
+      #22a05a,
+      #15803d
+    );
+
+    color: #ffffff;
+
+    box-shadow:
+      0 3px 8px rgba(21,128,61,0.25);
+  }
+
+ @media (max-width: 1024px) {
+
+  .panel-controls #dualPathBtn {
+    display: none;
+  }
+
+} 
+
+  /* ============================================================
+     導航模式彈出選單
+     ============================================================ */
+
+  .mobile-mode-popup {
+    position: fixed;
+
+    left: 50%;
+    bottom: 78px;
+
+    transform: translateX(-50%);
+
+    width: calc(100% - 40px);
+    max-width: 340px;
+
+    background: #ffffff;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+
+    padding: 10px;
+
+    box-shadow:
+      0 8px 24px rgba(0,0,0,0.2);
+
+    z-index: 1400;
+  }
+
+
+  .mobile-mode-popup.show {
+    display: block;
+  }
+
+
+  .mobile-mode-title {
+    font-size: 13px;
+    font-weight: 700;
+
+    color: #685A56;
+
+    margin-bottom: 8px;
+    padding: 2px 4px 7px;
+
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+
+  .mobile-mode-option {
+    width: 100%;
+
+    border: none;
+    background: #f8fafc;
+
+    padding: 11px 12px;
+    margin-bottom: 6px;
+
+    border-radius: 10px;
+
+    text-align: left;
+
+    color: #475569;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+  }
+
+
+  .mobile-mode-option:last-child {
+    margin-bottom: 0;
+  }
+
+
+  .mobile-mode-option.active {
+    background: #eef7ef;
+    color: #166534;
+
+    border: 1px solid #bbf7d0;
+  }
+
+}
+
+/* ============================================================
+   圖層不透明度控制
+   ============================================================ */
+
+.layer-opacity-control {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.opacity-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #685A56;
+  margin-bottom: 7px;
+}
+
+.opacity-row {
+  display: grid;
+  grid-template-columns: 58px 1fr 36px;
+  align-items: center;
+  gap: 6px;
+
+  margin: 5px 0;
+
+  font-size: 11px;
+  color: #475569;
+}
+
+.opacity-row input[type="range"] {
+  width: 100% !important;
+  height: 5px;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  cursor: pointer;
+}
+
+.opacity-row span:last-child {
+  text-align: right;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* ============================================================
+   GVI 路網圖例
+   ============================================================ */
+
+.gvi-road-legend {
+
+  background: rgba(255,255,255,0.94);
+
+  padding: 8px 10px;
+
+  border-radius: 8px;
+
+  box-shadow:
+    0 2px 8px rgba(0,0,0,0.15);
+
+  font-size: 11px;
+
+  color: #475569;
+
+  min-width: 150px;
+
+}
+
+
+.gvi-road-legend-title {
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  color: #685A56;
+
+  margin-bottom: 6px;
+
+}
+
+
+.gvi-road-gradient {
+
+  width: 150px;
+  height: 10px;
+
+  border-radius: 999px;
+
+  background: linear-gradient(
+    90deg,
+    #F4E66A 0%,
+    #D7E96B 20%,
+    #A7D96B 40%,
+    #69C66B 60%,
+    #2FA66B 80%,
+    #147A63 100%
+  );
+
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+
+.gvi-road-legend-labels {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  margin-top: 3px;
+
+  font-size: 10px;
+
+  font-weight: 600;
+
+}
+
+
+
+/* ============================================================
+   2026-09 完整版視覺調整：嘉義市品牌 + 綠色健康介面
+   ============================================================ */
+
+:root {
+  --accent: #7E6D68;
+  --accent-2: #675853;
+  --accent-light: #F4F1EF;
+  --highlight: #DFE200;
+  --health-green: #3F7F55;
+  --health-green-dark: #2F6543;
+  --panel: #FFFFFF;
+  --panel-base: #E9E7E2;
+  --panel-card: #FFFFFF;
+  --muted: #6F6966;
+  --bg: #F5F3EF;
+}
+
+header {
+  background: linear-gradient(110deg, #75645F 0%, #7E6D68 58%, #6F615D 100%);
+  border-bottom: 4px solid #DFE200;
+  box-shadow: 0 5px 16px rgba(83, 68, 63, 0.20);
+}
+
+.panel-controls,
+.panel-stats {
+  background: var(--panel-base);
+  border: 1px solid rgba(126,109,104,0.12);
+  box-shadow: 0 7px 22px rgba(67,55,51,0.10);
+}
+
+.panel-controls .infoBox,
+.panel-controls .addr-search-group,
+.panel-controls .route-display-control {
+  background: #fff;
+  border: 1px solid rgba(126,109,104,0.14);
+  border-radius: 11px;
+  box-shadow: 0 2px 8px rgba(67,55,51,0.05);
+}
+
+.panel-controls .addr-search-group,
+.panel-controls .route-display-control {
+  padding: 10px;
+}
+
+.panel-divider {
+  border-top-color: rgba(126,109,104,0.22) !important;
+}
+
+#infoView {
+  padding-right: 3px;
+  gap: 10px !important;
+  scrollbar-width: thin;
+  scrollbar-color: #b4aba6 transparent;
+}
+
+#infoView > .stat-title {
+  margin: 0;
+  padding: 10px 11px 5px;
+  background: #fff;
+  border: 1px solid rgba(126,109,104,0.12);
+  border-bottom: none;
+  border-radius: 11px 11px 0 0;
+}
+
+#infoView > .time-box {
+  margin-top: -10px;
+  padding: 8px 11px 11px;
+  background: #fff;
+  border: 1px solid rgba(126,109,104,0.12);
+  border-top: none;
+  border-radius: 0 0 11px 11px;
+  box-shadow: 0 2px 8px rgba(67,55,51,0.05);
+}
+
+.health-account-box {
+  background: #fff !important;
+  border: 1px solid rgba(126,109,104,0.12) !important;
+  border-radius: 11px !important;
+  padding: 9px !important;
+  box-shadow: 0 2px 8px rgba(67,55,51,0.05);
+}
+
+/* 核心 reNDVI / GVI 指標明顯放大 */
+#rendviBlock,
+#regviBlock {
+  padding: 13px 14px !important;
+  border-radius: 13px !important;
+  box-shadow: 0 4px 13px rgba(63,127,85,0.12) !important;
+}
+
+#rendviBlock .stat-title,
+#regviBlock .stat-title {
+  font-size: 18px !important;
+  line-height: 1.35 !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.2px;
+}
+
+#rendviBlock .progress-wrap,
+#regviBlock .progress-wrap {
+  padding: 11px !important;
+  margin-top: 7px;
+}
+
+#rendviBlock .progress-number,
+#regviBlock .progress-number {
+  font-size: 29px !important;
+  line-height: 1.1 !important;
+  font-weight: 900 !important;
+  margin-bottom: 9px !important;
+}
+
+#rendviBlock .progress-bar,
+#regviBlock .progress-bar {
+  height: 21px !important;
+}
+
+#rendviBlock .progress-fill,
+#regviBlock .progress-fill {
+  height: 21px !important;
+  line-height: 21px !important;
+  font-size: 12px !important;
+}
+
+/* 即使桌機高度較矮，也不要把兩個最重要的提升率縮回太小 */
+@media (min-width:1025px) and (max-height:850px) {
+  #rendviBlock .stat-title,
+  #regviBlock .stat-title { font-size: 17px !important; }
+  #rendviBlock .progress-number,
+  #regviBlock .progress-number { font-size: 25px !important; }
+  #infoView { overflow-y: auto !important; }
+}
+
+/* 路線著色控制 */
+.route-color-title {
+  margin: 9px 0 5px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #685A56;
+}
+
+.route-color-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.route-color-btn,
+.mobile-color-option {
+  border: 1px solid #d9d4d1;
+  background: #fff;
+  color: #5f5a58;
+  border-radius: 999px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.route-color-btn {
+  padding: 6px 3px;
+  font-size: 10.5px;
+}
+
+.route-color-btn.active,
+.mobile-color-option.active {
+  background: #3F7F55;
+  border-color: #3F7F55;
+  color: #fff;
+}
+
+.mobile-path-subtitle {
+  margin: 8px 2px 4px;
+  padding-top: 7px;
+  border-top: 1px solid #e2e8f0;
+  color: #685A56;
+  font-size: 11px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.mobile-color-option {
+  width: 100%;
+  margin: 3px 0;
+  padding: 7px 6px;
+  font-size: 11px;
+}
+
+@media (max-width:1024px) {
+  .mobile-path-popup { width: 150px; max-height: 70vh; overflow-y: auto; }
+}
+
+/* Leaflet 圖層控制分組標題 */
+.layer-section-title {
+  margin: 7px 0 5px;
+  padding: 6px 8px;
+  border-radius: 7px;
+  background: #F1EFED;
+  color: #675853;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.3px;
+}
+
+.leaflet-control-layers-base .layer-section-title { margin-top: 0; }
+.leaflet-control-layers-overlays .layer-section-title { margin-top: 8px; }
+
+.opacity-row {
+  grid-template-columns: 72px 1fr 36px;
+}
+
+/* reNDVI 路網圖例 */
+.rendvi-road-legend {
+  background: rgba(255,255,255,0.94);
+  padding: 8px 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  font-size: 11px;
+  color: #475569;
+  min-width: 150px;
+}
+
+.rendvi-road-legend-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: #3F7F55;
+  margin-bottom: 6px;
+}
+
+.rendvi-road-gradient {
+  width: 150px;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(90deg,#F6F4A9 0%,#B8E186 20%,#66C2A4 40%,#2A9D8F 60%,#2C7FB8 80%,#253494 100%);
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+.rendvi-road-legend-labels {
+  display:flex;
+  justify-content:space-between;
+  margin-top:3px;
+  font-size:10px;
+  font-weight:700;
+}
+
+
+.control-card {
+  background:#fff;
+  border:1px solid rgba(126,109,104,0.14);
+  border-radius:11px;
+  padding:10px;
+  box-shadow:0 2px 8px rgba(67,55,51,0.05);
+}
+
+.control-card .route-display-control {
+  margin-top:7px;
+  padding:9px;
+  box-shadow:none;
+  background:#F8F7F5;
+}
+
+.height-control-row {
+  margin-top:-10px !important;
+  margin-bottom:0 !important;
+  padding:7px 11px 9px;
+  background:#fff;
+  border-left:1px solid rgba(126,109,104,0.12);
+  border-right:1px solid rgba(126,109,104,0.12);
+}
+
+#infoView > .health-account-box {
+  margin-top:0;
+  border-radius:0 0 11px 11px !important;
+  border-top:none !important;
+}
+
+
+
+/* ============================================================
+   2026-09-09 第二次介面修正版
+   ============================================================ */
+
+/* 1. 整體底色與左側控制面板：加深區隔、增加左右留白 */
+body { background:#F3F0EB !important; }
+.layout { gap:14px !important; }
+.panel-controls {
+  width:286px !important;
+  min-width:286px;
+  padding:15px 17px 16px !important;
+  gap:9px !important;
+  justify-content:flex-start !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  background:#DED9D3 !important;
+  border:1px solid rgba(103,88,83,.18) !important;
+  scrollbar-width:thin;
+  scrollbar-color:#A99E98 transparent;
+}
+.panel-controls .panel-title {
+  font-size:19px !important;
+  margin-bottom:1px;
+}
+.panel-controls .infoBox,
+.panel-controls .addr-search-group,
+.panel-controls .control-card {
+  flex:0 0 auto;
+}
+.panel-controls .infoBox {
+  min-height:0 !important;
+  padding:10px 12px !important;
+  font-size:12.5px !important;
+  line-height:1.5 !important;
+  white-space:pre-line !important;
+  overflow-wrap:anywhere;
+  word-break:normal;
+  background:#FFF !important;
+}
+.panel-controls label {
+  font-size:12.5px !important;
+  line-height:1.4;
+  overflow-wrap:anywhere;
+}
+.panel-controls input,
+.panel-controls select,
+.panel-controls .btn {
+  min-width:0;
+  font-size:12.5px !important;
+}
+.panel-controls .btn { white-space:normal; line-height:1.3; }
+.addr-button-row { gap:7px !important; }
+.addr-button-row .btn { padding-left:7px !important; padding-right:7px !important; }
+.control-card { padding:11px !important; }
+.panel-controls #resetBtn {
+  flex:0 0 auto;
+  margin-top:1px;
+  margin-bottom:2px;
+}
+.panel-controls > .muted {
+  flex:0 0 auto;
+  font-size:10.5px !important;
+  line-height:1.45;
+  margin-top:2px !important;
+}
+
+/* 2. 拿掉頁首底部黃色線 */
+header { border-bottom:none !important; }
+
+/* 3. 右側次要指標更緊湊，主提升率保留醒目 */
+.panel-stats { background:#E5E1DC !important; }
+#infoView { gap:6px !important; }
+#infoView > .stat-title,
+#infoView .secondary-stat-title {
+  padding:7px 9px 4px !important;
+  font-size:12.5px !important;
+  line-height:1.25 !important;
+}
+#infoView > .time-box {
+  margin-top:-6px !important;
+  padding:5px 9px 7px !important;
+  gap:2px !important;
+}
+#infoView .time-row {
+  min-height:18px !important;
+  font-size:11.5px !important;
+  line-height:1.25 !important;
+  padding:1px 0;
+}
+#rendviBlock,
+#regviBlock { margin-bottom:3px; }
+#rendviBlock .stat-title,
+#regviBlock .stat-title {
+  font-size:18px !important;
+  padding:0 !important;
+}
+#rendviBlock .progress-number,
+#regviBlock .progress-number { font-size:29px !important; }
+
+/* 4. 健康步帳：標題、滑桿、四宮格整合成同一張卡片 */
+.health-section-box {
+  background:#FFF;
+  border:1px solid rgba(126,109,104,.13);
+  border-radius:11px;
+  box-shadow:0 2px 8px rgba(67,55,51,.05);
+  overflow:hidden;
+  flex:0 0 auto;
+}
+.health-section-box .health-section-title {
+  margin:0 !important;
+  padding:7px 9px 5px !important;
+  border:none !important;
+  border-radius:0 !important;
+  background:#FFF !important;
+  font-size:12.5px !important;
+}
+.health-section-box .height-control-row {
+  margin:0 !important;
+  padding:4px 9px 6px !important;
+  border:none !important;
+  background:#FFF !important;
+}
+.health-section-box .health-account-box {
+  margin:0 !important;
+  padding:6px 8px 8px !important;
+  border:none !important;
+  border-top:1px solid #EEEAE6 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+}
+.health-section-box .health-grid,
+.health-section-box .health-extra-grid { gap:4px !important; }
+.health-section-box .health-card { padding:4px 3px !important; }
+.health-section-box .health-card .muted { font-size:10.5px !important; }
+.health-section-box .health-value {
+  font-size:12px !important;
+  line-height:1.2 !important;
+  margin-top:2px !important;
+}
+.health-section-box #heightSlider { height:6px !important; }
+
+/* 圖層不透明度文字欄位稍微加寬，長名稱不爆框 */
+.opacity-row { grid-template-columns:82px minmax(70px,1fr) 35px !important; gap:5px !important; }
+.opacity-row > span:first-child { font-size:10px !important; line-height:1.15; overflow-wrap:anywhere; }
+
+/* 8~11. 手機版 */
+@media (max-width:1024px) {
+  .panel-controls {
+    width:auto !important;
+    min-width:0 !important;
+    left:10px !important;
+    right:10px !important;
+    padding:12px 14px 16px !important;
+    max-height:calc(100dvh - 205px) !important;
+    background:#DED9D3 !important;
+  }
+
+  /* 路徑顯示 / 路徑著色已經獨立到「路徑」功能鍵，設定抽屜不重複顯示 */
+  .panel-controls #routeDisplayControl { display:none !important; }
+
+  /* 起終點座標改成容易換行的小資訊卡 */
+  .panel-controls #pointInfo {
+    width:100%;
+    box-sizing:border-box;
+    padding:9px 10px !important;
+    font-size:11.5px !important;
+    line-height:1.45 !important;
+    white-space:pre-line !important;
+    overflow-wrap:anywhere !important;
+  }
+
+  /* 關閉按鈕固定在抽屜上緣，不隨內容捲走 */
+  .panel-controls .panel-close {
+    position:sticky !important;
+    top:0 !important;
+    align-self:flex-end;
+    flex:0 0 30px;
+    margin:-2px 0 -30px auto !important;
+    z-index:30 !important;
+    box-shadow:0 2px 7px rgba(0,0,0,.12);
+  }
+  .panel-controls .panel-title {
+    padding-right:42px !important;
+    min-height:30px;
+  }
+
+  /* 手機路徑小選單：兩個功能群都要有明確小標題 */
+  .mobile-path-popup { width:166px !important; max-height:68vh !important; }
+  .mobile-path-popup-title,
+  .mobile-path-subtitle {
+    display:block;
+    padding:6px 8px !important;
+    margin:0 0 6px !important;
+    border-radius:8px;
+    background:#F1EFED;
+    color:#675853 !important;
+    border:none !important;
+    font-size:11.5px !important;
+    font-weight:900 !important;
+    text-align:left !important;
+  }
+  .mobile-path-popup-header { margin-bottom:4px !important; gap:5px; }
+  .mobile-path-popup-header .mobile-path-popup-title { flex:1; margin-bottom:0 !important; }
+  .mobile-path-subtitle { margin-top:8px !important; }
+
+  /* 路徑/NDVI/GVI 圖例全部避開底部功能列 */
+  .route-legend,
+  .ndvi-legend,
+  .rendvi-road-legend,
+  .gvi-road-legend {
+    margin-bottom:calc(58px + max(10px, env(safe-area-inset-bottom)) + 22px) !important;
+  }
+}
+
+
+
+/* ============================================================
+   2026-09-09 第三次介面修正版
+   ============================================================ */
+
+/* 歡迎畫面：改用嘉義市 Logo */
+.welcome-icon.welcome-logo-icon {
+  width:92px !important;
+  height:72px !important;
+  margin:0 auto 10px !important;
+  padding:6px !important;
+  background:#ffffff !important;
+  border-radius:16px !important;
+  overflow:visible !important;
+  box-shadow:0 5px 14px rgba(67,55,51,.10);
+  box-sizing:border-box;
+}
+.welcome-logo-icon img {
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:center;
+  display:block;
+}
+.welcome-streetview-note {
+  margin-top:12px;
+  padding:10px 12px;
+  border-radius:10px;
+  background:#FFFBE8;
+  border:1px solid #EEE2A4;
+  color:#5F5A58;
+  font-size:12px;
+  line-height:1.6;
+}
+.welcome-streetview-note strong { color:#5C6F35; }
+
+/* 左右面板和頁面底色做更明顯區隔 */
+body { background:#F4F1EC !important; }
+.panel-controls {
+  background:#D6CEC7 !important;
+  border:1px solid #C1B6AE !important;
+  box-shadow:0 8px 24px rgba(75,61,56,.13) !important;
+}
+.panel-stats {
+  background:#D9DED8 !important;
+  border:1px solid #C2CAC1 !important;
+  box-shadow:0 8px 24px rgba(55,72,58,.11) !important;
+}
+
+/* 左側：目前位置按鈕更醒目，與下方卡片距離縮短 */
+#locateBtn {
+  font-size:14px !important;
+  font-weight:800 !important;
+  padding:10px 12px !important;
+  margin-bottom:0 !important;
+}
+.panel-controls #locateBtn + .panel-divider {
+  margin:2px 0 3px !important;
+  background:transparent !important;
+  height:0 !important;
+}
+.panel-controls .addr-search-group { margin-top:0 !important; }
+
+/* 圖層不透明度：直接放在各綠色健康圖層開關下方 */
+.layer-opacity-control, .opacity-title { display:none !important; }
+.inline-layer-opacity {
+  display:grid;
+  grid-template-columns:42px minmax(88px,1fr) 35px;
+  align-items:center;
+  gap:6px;
+  margin:-2px 4px 6px 25px;
+  padding:4px 7px 5px;
+  border-radius:7px;
+  background:#F7F6F3;
+  border:1px solid #E5E0DC;
+  box-sizing:border-box;
+}
+.inline-opacity-label {
+  font-size:10px;
+  font-weight:800;
+  color:#786F6B;
+}
+.inline-layer-opacity input[type="range"] {
+  width:100% !important;
+  min-width:0;
+  height:5px;
+  padding:0 !important;
+  margin:0 !important;
+}
+.inline-opacity-value {
+  text-align:right;
+  font-size:10px;
+  font-weight:800;
+  color:#675853;
+}
+
+/* 右側：負碳存摺、時間估計各自成為單一卡片，標題與數值不再拆開 */
+.compact-metric-box {
+  background:#FFF;
+  border:1px solid rgba(93,108,94,.14);
+  border-radius:11px;
+  box-shadow:0 2px 8px rgba(55,72,58,.05);
+  overflow:hidden;
+  flex:0 0 auto;
+}
+.compact-metric-box > .stat-title {
+  margin:0 !important;
+  padding:8px 10px 4px !important;
+  border:none !important;
+  border-radius:0 !important;
+  background:#FFF !important;
+  font-size:14px !important;
+  line-height:1.3 !important;
+}
+.compact-metric-box > .time-box {
+  margin:0 !important;
+  padding:4px 10px 8px !important;
+  border:none !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  background:#FFF !important;
+  gap:3px !important;
+}
+#infoView .compact-metric-box .time-row {
+  min-height:20px !important;
+  font-size:13px !important;
+  line-height:1.3 !important;
+  padding:1px 0 !important;
+}
+
+/* 右側其餘資訊略放大，但仍維持主提升率最醒目 */
+.panel-tabs .panel-tab { font-size:13px !important; font-weight:800; }
+.health-section-box .health-section-title { font-size:14px !important; }
+.health-section-box .height-control-row span { font-size:12.5px !important; }
+.health-section-box .health-card .muted { font-size:11.5px !important; }
+.health-section-box .health-value { font-size:13.5px !important; }
+#rendviBlock .stat-title, #regviBlock .stat-title { font-size:18.5px !important; }
+#rendviBlock .progress-number, #regviBlock .progress-number { font-size:30px !important; }
+
+/* 手機設定抽屜：標題與關閉按鈕固定成真正的頂部列 */
+.mobile-panel-head { display:contents; }
+@media (max-width:1024px) {
+  .panel-controls {
+    padding-top:0 !important;
+    overflow-y:auto !important;
+  }
+  .panel-controls .mobile-panel-head {
+    display:flex !important;
+    position:sticky !important;
+    top:0 !important;
+    z-index:60 !important;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin:0 -14px 8px !important;
+    padding:10px 12px 8px 14px !important;
+    background:#D6CEC7 !important;
+    border-bottom:1px solid rgba(103,88,83,.16);
+  }
+  .panel-controls .mobile-panel-head .panel-title {
+    margin:0 !important;
+    padding:0 !important;
+    min-height:0 !important;
+  }
+  .panel-controls .mobile-panel-head .panel-close {
+    display:flex !important;
+    position:static !important;
+    top:auto !important;
+    right:auto !important;
+    margin:0 !important;
+    flex:0 0 30px !important;
+    align-items:center;
+    justify-content:center;
+    z-index:auto !important;
+    box-shadow:0 2px 6px rgba(0,0,0,.10);
+  }
+  .panel-controls #pointInfo { margin-top:0 !important; }
+
+  .inline-layer-opacity {
+    grid-template-columns:40px minmax(82px,1fr) 34px;
+    margin-left:20px;
+    margin-right:2px;
+  }
+
+  .welcome-icon.welcome-logo-icon { width:54px !important; height:54px !important; }
+  .welcome-streetview-note { font-size:11px; padding:8px 10px; }
+}
+
+
+/* ============================================================
+   2026-09-09 第四次小修正：手機圖例 / 路徑著色 / 健康步帳 / 碳排說明
+   ============================================================ */
+
+/* 桌機：路線著色三顆按鈕維持單行，並讓白色控制區更貼近左面板邊界 */
+@media (min-width: 1025px) {
+  .panel-controls .control-card {
+    padding-left: 7px !important;
+    padding-right: 7px !important;
+  }
+
+  .panel-controls .control-card .route-display-control {
+    margin-left: -2px !important;
+    margin-right: -2px !important;
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+  }
+
+  .route-color-buttons {
+    grid-template-columns: 0.72fr 1.42fr 1.42fr !important;
+    gap: 4px !important;
+  }
+
+  .route-color-btn {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow: hidden;
+    text-overflow: clip;
+    padding: 7px 3px !important;
+    font-size: 10.7px !important;
+    letter-spacing: -0.1px;
+  }
+}
+
+/* 負碳存摺標題：燈泡緊接在標題後方，與健康步帳一致 */
+.carbon-title-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 3px !important;
+}
+
+.carbon-title-row > span {
+  flex: 0 0 auto !important;
+}
+
+.metric-info-btn {
+  flex: 0 0 auto;
+  border: none;
+  background: none;
+  padding: 1px 2px;
+  margin: 0;
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+}
+
+/* 說明視窗：避免桌機底部關閉鈕被裁切，手機版則完整收進可視範圍 */
+#stepsInfoPopupFixDummy { display:none; }
+
+@media (min-width: 1025px) {
+  /* 實際位置由 JS 設定；這裡保留桌機安全邊界概念 */
+}
+
+@media (max-width: 1024px) {
+  .metric-info-btn {
+    font-size: 16px !important;
+    padding: 1px !important;
+  }
+}
+
+/* 手機：圖例改為「上方路徑圖例 + 下方三個環境圖例」的固定兩列排版。
+   不需要橫向滑動，避免使用者不知道圖例列可以滑動。 */
+@media (max-width: 1024px) {
+  .leaflet-bottom.leaflet-left {
+    left: 10px !important;
+    right: 10px !important;
+    bottom: calc(76px + max(10px, env(safe-area-inset-bottom))) !important;
+    width: auto !important;
+    max-width: calc(100vw - 20px) !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: flex-end !important;
+    gap: 6px !important;
+    overflow: visible !important;
+    padding: 2px !important;
+    box-sizing: border-box !important;
+    pointer-events: auto;
+  }
+
+  .leaflet-bottom.leaflet-left .leaflet-control {
+    float: none !important;
+    clear: none !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 路徑圖例固定在第一列，完整占一列。 */
+  .leaflet-bottom.leaflet-left .route-legend {
+    order: 1 !important;
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    padding: 7px 9px !important;
+    border-radius: 9px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 三個環境圖例固定在第二列，各占三分之一。 */
+  .leaflet-bottom.leaflet-left .ndvi-legend,
+  .leaflet-bottom.leaflet-left .rendvi-road-legend,
+  .leaflet-bottom.leaflet-left .gvi-road-legend {
+    order: 2 !important;
+    flex: 1 1 0 !important;
+    width: calc((100% - 12px) / 3) !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    padding: 6px 6px !important;
+    border-radius: 9px !important;
+    box-sizing: border-box !important;
+    font-size: 9.8px !important;
+    line-height: 1.2 !important;
+  }
+
+  .route-legend-title {
+    margin-bottom: 4px !important;
+    font-size: 11px !important;
+    white-space: nowrap !important;
+  }
+
+  /* 路徑圖例內容在手機上橫向排列，節省高度。 */
+  .route-legend {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    column-gap: 10px !important;
+    row-gap: 2px !important;
+  }
+
+  .route-legend-title {
+    flex: 0 0 100% !important;
+  }
+
+  .route-legend-row {
+    flex: 1 1 0 !important;
+    gap: 4px !important;
+    margin: 1px 0 !important;
+    white-space: nowrap !important;
+    font-size: 9.8px !important;
+  }
+
+  .route-legend-line {
+    width: 18px !important;
+    height: 4px !important;
+    flex: 0 0 18px !important;
+  }
+
+  .rendvi-road-legend-title,
+  .gvi-road-legend-title,
+  .ndvi-legend > div:first-child {
+    margin-bottom: 3px !important;
+    font-size: 9.8px !important;
+    line-height: 1.15 !important;
+    white-space: normal !important;
+  }
+
+  .rendvi-road-gradient,
+  .gvi-road-gradient,
+  .ndvi-legend > div:nth-child(2) {
+    width: 100% !important;
+    height: 7px !important;
+    box-sizing: border-box !important;
+  }
+
+  .rendvi-road-legend-labels,
+  .gvi-road-legend-labels,
+  .ndvi-legend > div:nth-child(3) {
+    width: 100% !important;
+    font-size: 8.3px !important;
+    box-sizing: border-box !important;
+  }
+}
+
+
+
+/* ============================================================
+   2026-09-09 v5：桌機不同比例 / 瀏覽器縮放自適應
+   目的：避免右側資訊卡因 space-between 被撐出大面積空白。
+   ============================================================ */
+
+@media (min-width: 1025px) {
+  /* 左右面板中的內容都由上往下自然排列，不用剩餘高度硬撐開。 */
+  .panel-controls,
+  .panel-stats {
+    justify-content: flex-start !important;
+  }
+
+  /* 關鍵修正：原本 mode-single / mode-both 使用 space-between，
+     在 16:9、21:9、瀏覽器縮放等情況會把卡片之間的空白無限放大。 */
+  #infoView,
+  #infoView.mode-single,
+  #infoView.mode-both {
+    justify-content: flex-start !important;
+    align-content: flex-start !important;
+    gap: clamp(6px, 0.9vh, 11px) !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    padding-bottom: 4px !important;
+  }
+
+  /* 每張卡片依內容決定高度，不參與垂直拉伸。 */
+  #infoView > *,
+  #rendviBlock,
+  #regviBlock,
+  .compact-metric-box,
+  .health-section-box {
+    flex: 0 0 auto !important;
+  }
+
+  /* 統一主要區塊的間距，避免高解析度螢幕看起來忽疏忽密。 */
+  #rendviBlock,
+  #regviBlock,
+  .compact-metric-box,
+  .health-section-box {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  /* 右側成果面板本身可捲動，若螢幕高度不足就捲動，不再壓縮或拉開卡片。 */
+  .panel-stats {
+    overflow: hidden !important;
+  }
+
+  /* 左側同樣採自然間距；高度不足時維持原本的面板內捲動。 */
+  .panel-controls {
+    gap: clamp(6px, 0.8vh, 10px) !important;
+  }
+}
+
+/* 較矮桌機 / 高 DPI 縮放時再稍微收緊，但不犧牲可讀性。 */
+@media (min-width: 1025px) and (max-height: 760px) {
+  #infoView,
+  #infoView.mode-single,
+  #infoView.mode-both {
+    gap: 5px !important;
+  }
+
+  .panel-stats {
+    padding-top: 9px !important;
+    padding-bottom: 9px !important;
+  }
+}
+
+
+/* ============================================================
+   2026-09-10 手機版修正
+   1. 圖層選單可捲動，並避開底部功能鍵
+   2. iOS / 手機瀏覽器聚焦地址欄時避免自動放大
+   ============================================================ */
+@media (max-width: 1024px) {
+  .leaflet-control-layers-expanded {
+    /* 上方已避開 header；下方再預留底部 58px 功能列與安全區 */
+    max-height: calc(100dvh - 115px - 58px - max(10px, env(safe-area-inset-bottom)) - 28px) !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  .leaflet-control-layers-expanded .leaflet-control-layers-list {
+    max-height: calc(100dvh - 115px - 58px - max(10px, env(safe-area-inset-bottom)) - 76px) !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 12px;
+  }
+
+  /* iOS Safari 對小於 16px 的文字輸入欄會在 focus 時自動 zoom。 */
+  #addrInput {
+    font-size: 16px !important;
+  }
+}
+
+
+/* ============================================================
+   v10：手機 / LINE 內建瀏覽器輸入框防自動放大
+   - 所有可輸入控制項至少 16px
+   - 不永久禁止使用者手動縮放
+   ============================================================ */
+@media (max-width: 1024px) {
+  #addrInput,
+  input[type="text"],
+  input[type="search"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px !important;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+}
+
+
+/* ============================================================
+   v11 頁首主視覺：白色左側 + 咖啡色柔和漸層
+   ============================================================ */
+header#top-bar {
+  background: linear-gradient(
+    100deg,
+    #FFFFFF 0%,
+    #FFFFFF 24%,
+    #F7F5F2 48%,
+    #E9E2DD 72%,
+    #CFC1BA 100%
+  ) !important;
+  color: #3F4E43 !important;
+  border: 1px solid rgba(126,109,104,0.22);
+  box-shadow: 0 4px 14px rgba(126,109,104,0.13) !important;
+}
+
+header#top-bar .header-left {
+  flex: 0 1 auto;
+}
+
+header#top-bar .title-container {
+  align-items: center;
+}
+
+.title-text-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  gap: 3px;
+}
+
+header#top-bar .main-title {
+  color: #365F48;
+  text-shadow: none !important;
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+}
+
+header#top-bar .main-title .version-tag {
+  display: inline-block;
+  margin-left: 7px;
+  padding: 2px 7px;
+  color: #667D35;
+  background: rgba(223,226,0,0.18);
+  border: 1px solid rgba(150,160,0,0.22);
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.header-subtitle {
+  color: #746E69;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: 0.15px;
+  white-space: nowrap;
+}
+
+/* 淺色頁首下，研究團隊改用深色字，避免原本白字看不清楚 */
+header#top-bar .team-info {
+  background: rgba(255,255,255,0.48) !important;
+  border-color: rgba(126,109,104,0.18) !important;
+  box-shadow: 0 2px 6px rgba(80,65,60,0.05) !important;
+}
+
+header#top-bar .team-label {
+  color: #685A56 !important;
+  background: rgba(126,109,104,0.10) !important;
+  border-color: rgba(126,109,104,0.16) !important;
+}
+
+header#top-bar .team-members {
+  color: #5F5652 !important;
+}
+
+@media (max-width: 1024px) {
+  header#top-bar {
+    background: linear-gradient(
+      110deg,
+      rgba(255,255,255,0.98) 0%,
+      rgba(255,255,255,0.98) 32%,
+      rgba(244,240,237,0.97) 66%,
+      rgba(214,202,195,0.97) 100%
+    ) !important;
+  }
+
+  header#top-bar .header-left {
+    justify-content: center;
+  }
+
+  header#top-bar .main-title {
+    font-size: 15px;
+    white-space: nowrap;
+  }
+
+  .header-subtitle {
+    font-size: 10px;
+    white-space: normal;
+    text-align: left;
+  }
+
+  header#top-bar .header-right {
+    border-top-color: rgba(126,109,104,0.18) !important;
+  }
+}
+
+@media (max-width: 430px) {
+  header#top-bar .main-title {
+    font-size: 13.5px;
+    letter-spacing: 0.1px;
+  }
+  header#top-bar .main-title .version-tag {
+    font-size: 7px;
+    margin-left: 3px;
+    padding: 1px 4px;
+  }
+  .header-subtitle {
+    font-size: 9px;
+  }
+}
+
+/* ============================================================
+   v12：嘉義市 Logo 顯示修正
+   ============================================================ */
+.logo-chiayi {
+  object-fit: contain !important;
+  object-position: center !important;
+  background: #ffffff !important;
+  padding: 3px !important;
+  border-radius: 8px !important;
+  box-sizing: border-box !important;
+  filter: none !important;
+}
+
+@media (max-width: 1024px) {
+  .welcome-icon.welcome-logo-icon {
+    width: 82px !important;
+    height: 64px !important;
+    padding: 5px !important;
+  }
+  .logo-chiayi {
+    width: 38px !important;
+    height: 38px !important;
+    padding: 2px !important;
+  }
+}
+/* ============================================================
+   v14：Logo 再放大，比例對齊參考畫面
+   ============================================================ */
+/* 歡迎畫面 Logo：接近參考圖中的主視覺尺寸 */
+.welcome-icon.welcome-logo-icon {
+  width: 290px !important;
+  height: 128px !important;
+  padding: 0 !important;
+  margin: 0 auto 14px !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+.welcome-logo-icon img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  display: block !important;
+}
+
+/* 頁首左側 Logo：放大到接近參考圖比例 */
+.logo-chiayi {
+  width: 220px !important;
+  height: 82px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  object-fit: contain !important;
+  object-position: left center !important;
+  filter: none !important;
+  flex-shrink: 0 !important;
+}
+
+/* Logo 變大後稍微收緊頁首左右間距，避免整體過高 */
+header#top-bar {
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+}
+header#top-bar .header-left {
+  gap: 14px !important;
+}
+
+/* 平板 / 手機：維持清楚可見，但不把標題擠出畫面 */
+@media (max-width: 1024px) {
+  .welcome-icon.welcome-logo-icon {
+    width: 230px !important;
+    height: 104px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .logo-chiayi {
+    width: 118px !important;
+    height: 54px !important;
+    padding: 0 !important;
+  }
+
+  header#top-bar .header-left {
+    gap: 8px !important;
+  }
+}
+
+/* 窄手機再縮一級，確保 Geo-AI 標題與試作版不換行爆版 */
+@media (max-width: 430px) {
+  .welcome-icon.welcome-logo-icon {
+    width: 205px !important;
+    height: 92px !important;
+  }
+
+  .logo-chiayi {
+    width: 92px !important;
+    height: 46px !important;
+  }
+}
+
+
+
+/* ============================================================
+   v15：主畫面頁首縮小（歡迎畫面 Logo 維持 v14 尺寸）
+   目的：降低 Header 高度，讓左右面板取得更多垂直空間，
+   桌機成果面板盡量不需要捲動。
+   ============================================================ */
+@media (min-width: 1025px) {
+  /* 只縮主畫面左上 Logo；歡迎畫面的 Logo 不動 */
+  .logo-chiayi {
+    width: 168px !important;
+    height: 62px !important;
+  }
+
+  header#top-bar {
+    padding: 4px 18px !important;
+    gap: 14px !important;
+  }
+
+  header#top-bar .header-left {
+    gap: 12px !important;
+  }
+
+  header#top-bar .main-title {
+    font-size: 19px !important;
+    line-height: 1.15 !important;
+    letter-spacing: 0.35px !important;
+  }
+
+  header#top-bar .main-title .version-tag {
+    font-size: 8px !important;
+    padding: 1px 6px !important;
+    margin-left: 6px !important;
+  }
+
+  .header-subtitle {
+    font-size: 11px !important;
+    line-height: 1.25 !important;
+  }
+
+  .title-text-group {
+    gap: 2px !important;
+  }
+
+  /* 右側研究團隊區也稍微壓低，維持整排對齊 */
+  header#top-bar .team-info {
+    min-height: 28px !important;
+    padding: 3px 8px !important;
+  }
+
+  header#top-bar .team-label,
+  header#top-bar .team-members {
+    font-size: 11px !important;
+  }
+
+  .partner-logo {
+    height: 28px !important;
+  }
+}
+
+/* 平板 / 手機也稍微收斂主畫面頁首，但歡迎畫面仍維持大 Logo */
+@media (max-width: 1024px) {
+  .logo-chiayi {
+    width: 102px !important;
+    height: 46px !important;
+  }
+
+  header#top-bar {
+    padding: 6px 8px !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .logo-chiayi {
+    width: 82px !important;
+    height: 40px !important;
+  }
+}
+
+
+/* ===== 原 index.html style block 2 ===== */
+
+/* integrated_features.css */
+.integrated-tools{position:absolute;right:14px;top:130px;z-index:1250;display:flex;flex-direction:column;gap:7px}.integrated-tools button{width:42px;height:42px;border:1px solid #ddd;border-radius:50%;background:#fff;box-shadow:0 2px 9px #0002;cursor:pointer;font-size:18px}.feature-drawer{position:absolute;right:64px;top:125px;z-index:1300;width:min(340px,calc(100vw - 90px));max-height:65vh;overflow:auto;background:#fff;border-radius:14px;box-shadow:0 12px 35px #0003;padding:14px;color:#4d4542}.feature-drawer[hidden]{display:none}.feature-drawer h3{margin:0 0 10px;color:#685A56}.feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.feature-grid button,.nav-actions button{padding:9px;border:0;border-radius:9px;background:#f1efed;color:#5b4f4b;font-weight:700;cursor:pointer}.detour-integrated{margin:10px 0;padding:10px;background:#f7f6f3;border-radius:10px}.detour-integrated select{width:100%;padding:8px;margin-top:5px}.nav-hud-integrated{position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:1400;background:#fff;border-radius:13px;box-shadow:0 5px 20px #0003;padding:10px 14px;min-width:260px;text-align:center}.nav-hud-integrated[hidden]{display:none}.nav-primary{font-weight:800;color:#3f7f55}.nav-meta{font-size:12px;color:#766f6c;margin-top:4px}.user-nav-marker{background:#2563eb;border:3px solid #fff;width:16px;height:16px;border-radius:50%;box-shadow:0 0 0 5px #2563eb33}.feature-note{font-size:12px;line-height:1.55;color:#766f6c}.account-card{padding:10px;background:#fafafa;border-radius:9px}.account-card button{width:100%;padding:9px;border:0;border-radius:8px;background:#685A56;color:white;font-weight:700}@media(max-width:1024px){.integrated-tools{right:10px;top:120px}.feature-drawer{position:fixed;left:10px;right:10px;bottom:10px;top:auto;width:auto;max-height:55vh}.nav-hud-integrated{top:8px;width:calc(100% - 100px);min-width:0}}
+
+/* v2_features.css */
+/* ============================================================
+   嘉義樹導航：地圖左側「•••」附加功能
+   右側 panel-stats 保持只顯示路徑成果
+   ============================================================ */
+
+.integrated-tools,.feature-drawer,#v2Tools{display:none!important}
+
+.v2-map-tools{
+  position:absolute;
+  left:12px;
+  top:104px;
+  z-index:1350;
+  pointer-events:none;
+  font-family:"Noto Sans TC","Segoe UI","Microsoft JhengHei",sans-serif;
+}
+.v2-more-btn{
+  pointer-events:auto;
+  width:46px!important;height:46px!important;min-width:46px!important;
+  padding:0!important;margin:0!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  gap:4px!important;
+  border:1px solid rgba(63,127,85,.22)!important;
+  border-radius:50%!important;
+  background:rgba(242,249,238,.98)!important;
+  box-shadow:0 3px 12px rgba(0,0,0,.18)!important;
+  cursor:pointer!important;
+}
+.v2-more-btn span{display:block;width:5px;height:5px;border-radius:50%;background:#286247}
+.v2-more-btn:hover,.v2-more-btn[aria-expanded="true"]{background:#dff0d7!important;transform:none!important}
+
+.v2-map-drawer{
+  pointer-events:auto;
+  position:absolute;left:0;top:56px;
+  width:286px;
+  max-height:min(600px,calc(100vh - 220px));
+  overflow:auto;
+  padding:13px;
+  box-sizing:border-box;
+  background:rgba(255,255,255,.97);
+  border:1px solid rgba(126,109,104,.18);
+  border-radius:16px;
+  box-shadow:0 12px 32px rgba(0,0,0,.20);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+.v2-map-drawer[hidden]{display:none!important}
+
+.v2-drawer-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 2px 9px;border-bottom:1px solid #e8ece6;margin-bottom:5px}
+.v2-drawer-head small{display:block;color:#858b85;font-size:10px;margin-bottom:1px}
+.v2-drawer-head strong{display:block;color:#315f46;font-size:15px}
+.v2-drawer-head>button{width:29px!important;height:29px!important;padding:0!important;margin:0!important;border:0!important;border-radius:50%!important;background:#f0f3ef!important;color:#657168!important;font-size:20px!important;line-height:29px!important;cursor:pointer}
+
+.v2-drawer-home{display:flex;flex-direction:column;gap:1px}
+.v2-drawer-home>button{
+  width:100%!important;margin:0!important;padding:9px 8px!important;
+  display:flex!important;align-items:center!important;gap:10px!important;
+  text-align:left!important;border:0!important;border-radius:10px!important;
+  background:transparent!important;color:#285f44!important;
+  font-size:18px!important;cursor:pointer!important;box-shadow:none!important;
+}
+.v2-drawer-home>button:hover{background:#f1f7ee!important;transform:none!important}
+.v2-drawer-home>button>span{display:flex;flex-direction:column;min-width:0}
+.v2-drawer-home b{font-size:13.5px;line-height:1.25;color:#315f46}
+.v2-drawer-home small{font-size:10px;line-height:1.35;color:#818982;font-weight:500;margin-top:2px}
+.v2-drawer-home .v2-nav-entry{margin-top:3px!important;background:#edf8e9!important;border:1px solid #d7ead1!important}
+
+.v2-drawer-sub{font-size:12px;color:#4c5750}
+.v2-back{width:auto!important;padding:5px 2px 8px!important;margin:0!important;border:0!important;background:transparent!important;color:#2f7653!important;font-size:12px!important;font-weight:800!important;box-shadow:none!important;cursor:pointer}
+.v2-drawer-sub label{display:block;margin:7px 0 4px;color:#5f675f;font-size:11.5px;font-weight:800}
+.v2-drawer-sub select{width:100%;box-sizing:border-box;padding:8px 10px;margin:0 0 6px;border:1px solid #dce4da;border-radius:9px;background:#fff;font-size:12px}
+.v2-note{margin:6px 0 9px;padding:8px 9px;background:#f4f8f1;border:1px solid #e0eadb;border-radius:9px;color:#687269;font-size:11px;line-height:1.55}
+.v2-wide{width:100%!important}
+.v2-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+.v2-actions button,.v2-drawer-sub button.primary{padding:7px 9px;border:1px solid #d8e1d6;border-radius:8px;background:#fff;font-size:11.5px;font-weight:800;cursor:pointer}
+.v2-actions button.primary,.v2-drawer-sub button.primary{background:#3f7f55;color:#fff;border-color:#3f7f55}
+
+.v2-segment{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.v2-segment button{padding:7px 5px;border:1px solid #dce5d9;border-radius:8px;background:#fff;font-size:11px;font-weight:800;cursor:pointer}
+.v2-segment button.active{background:#e9f5e5;border-color:#9ec99e;color:#276444}
+
+.v2-poi-list{max-height:230px;overflow:auto;margin-top:7px}
+.v2-list-title{padding:6px 2px;border-bottom:1px solid #edf0eb;color:#315f46;font-weight:800}
+.v2-poi-item{display:flex;align-items:center;gap:8px;padding:7px 3px;border-bottom:1px solid #eee;cursor:pointer}
+.v2-poi-item>span{font-size:18px}
+.v2-poi-item>div{min-width:0}
+.v2-poi-item b{display:block;color:#34443a;font-size:11.5px}
+.v2-poi-item small{display:block;margin-top:2px;color:#7b837d;font-size:10px;line-height:1.4}
+
+.v2-poi-divicon{background:transparent!important;border:0!important}
+.v2-poi-pin{width:30px;height:30px;display:grid;place-items:center;background:#fff;border:2px solid #4c8b60;border-radius:50% 50% 50% 8px;transform:rotate(-45deg);box-shadow:0 3px 8px rgba(0,0,0,.22)}
+.v2-poi-pin span{display:block;transform:rotate(45deg);font-size:15px}
+
+.v2-weather-card{margin:6px 0;padding:8px;background:#fff;border:1px solid #eee;border-radius:8px;font-size:10.5px;line-height:1.55}
+.v2-nav-route-select{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.v2-nav-route-select button{padding:8px 5px;border:1px solid #d9e2d6;border-radius:8px;background:#fff;font-size:11px;font-weight:800;cursor:pointer}
+.v2-check{display:flex!important;align-items:center;gap:6px}
+.v2-check input{width:auto!important;margin:0!important}
+
+.nav-hud-v2{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  z-index:1450;min-width:245px;max-width:min(450px,86%);
+  padding:8px 11px;background:rgba(255,255,255,.97);
+  border:1px solid rgba(126,109,104,.16);border-radius:12px;
+  box-shadow:0 4px 18px rgba(0,0,0,.20)
+}
+.nav-hud-v2[hidden]{display:none!important}
+.nav-hud-v2 .main{font-size:13px;font-weight:800;color:#315f46}
+.nav-hud-v2 .next{margin-top:3px;font-size:11px}
+.nav-hud-v2 .meta{margin-top:2px;color:#6b7280;font-size:10px}
+.nav-hud-v2 button{width:auto!important;margin:5px 0 0!important;padding:5px 9px!important;border:0;border-radius:999px;background:#7e6d68;color:#fff;font-size:10px;cursor:pointer}
+.v2-user-dot{width:18px;height:18px;border-radius:50%;background:#2563eb;border:3px solid white;box-shadow:0 0 0 2px rgba(37,99,235,.4)}
+
+.map-wrap:fullscreen .v2-map-tools,.map-wrap:-webkit-full-screen .v2-map-tools{z-index:2200}
+.map-wrap:fullscreen .nav-hud-v2,.map-wrap:-webkit-full-screen .nav-hud-v2{z-index:2300}
+
+@media(max-width:1024px){
+  .v2-map-tools{left:10px;top:112px}
+  .v2-more-btn{width:43px!important;height:43px!important;min-width:43px!important}
+  .v2-map-drawer{top:51px;width:min(280px,calc(100vw - 28px));max-height:58vh}
+  .nav-hud-v2{top:62px}
+}
+
+
+/* ============================================================
+   2026-09-24 FINAL OVERRIDE
+   附加功能抽屜：修正標題不明顯、上緣裁切與整體捲動問題
+   ============================================================ */
+
+.v2-map-drawer {
+  pointer-events: auto;
+
+  position: absolute;
+  left: 0;
+  top: 56px;
+
+  width: 300px;
+  max-height: min(620px, calc(100vh - 190px));
+
+  /* 面板本身不捲動，避免標題被切掉 */
+  overflow: hidden;
+
+  padding: 0;
+  box-sizing: border-box;
+
+  background: rgba(255,255,255,0.98);
+
+  border: 1px solid rgba(126,109,104,0.18);
+  border-radius: 16px;
+
+  box-shadow: 0 12px 32px rgba(0,0,0,0.20);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.v2-map-drawer[hidden] {
+  display: none !important;
+}
+
+
+/* ---------- 固定標題列 ---------- */
+
+.v2-drawer-head {
+  position: relative;
+  top: auto;
+
+  z-index: 10;
+
+  min-height: 68px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+
+  padding: 11px 12px 10px 14px;
+  margin: 0;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  border-bottom: 1px solid rgba(126,109,104,0.14);
+}
+
+
+/* 左側標題文字容器 */
+.v2-drawer-head > div {
+  min-width: 0;
+  flex: 1;
+}
+
+
+/* 「附加功能」 */
+.v2-drawer-head small {
+  display: block;
+
+  margin: 0 0 2px 0;
+
+  color: #8a7b76;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  line-height: 1.35;
+
+  opacity: 1;
+}
+
+
+/* 「探索與工具」 */
+.v2-drawer-head strong {
+  display: block;
+
+  margin: 0;
+
+  color: #3f7f55;
+
+  font-size: 17px;
+  font-weight: 800;
+
+  line-height: 1.35;
+
+  letter-spacing: 0.2px;
+
+  opacity: 1;
+}
+
+
+/* 右上角關閉按鈕 */
+.v2-drawer-head > button {
+  flex: 0 0 34px;
+
+  width: 34px !important;
+  min-width: 34px !important;
+  height: 34px !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border: none !important;
+  border-radius: 50% !important;
+
+  background: #f0f4ef !important;
+
+  color: #68736b !important;
+
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+
+  box-shadow: none !important;
+
+  cursor: pointer;
+}
+
+.v2-drawer-head > button:hover {
+  background: #e4eee2 !important;
+  color: #3f7f55 !important;
+  transform: none !important;
+}
+
+
+/* ---------- 首頁功能清單：只有這裡捲動 ---------- */
+
+.v2-drawer-home {
+  display: flex;
+  flex-direction: column;
+
+  gap: 2px;
+
+  padding: 8px 10px 12px;
+
+  max-height: calc(
+    min(620px, calc(100vh - 190px)) - 68px
+  );
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  box-sizing: border-box;
+
+  scrollbar-width: thin;
+  scrollbar-color: rgba(126,109,104,0.42) transparent;
+}
+
+.v2-drawer-home::-webkit-scrollbar {
+  width: 6px;
+}
+
+.v2-drawer-home::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.v2-drawer-home::-webkit-scrollbar-thumb {
+  background: rgba(126,109,104,0.38);
+  border-radius: 999px;
+}
+
+
+/* 功能按鈕 */
+.v2-drawer-home > button {
+  flex: 0 0 auto;
+
+  width: 100% !important;
+
+  margin: 0 !important;
+  padding: 9px 8px !important;
+
+  display: flex !important;
+  align-items: center !important;
+
+  gap: 10px !important;
+
+  text-align: left !important;
+
+  border: 0 !important;
+  border-radius: 10px !important;
+
+  background: transparent !important;
+
+  color: #285f44 !important;
+
+  font-size: 18px !important;
+
+  box-shadow: none !important;
+
+  cursor: pointer !important;
+}
+
+.v2-drawer-home > button:hover {
+  background: #f1f7ee !important;
+  transform: none !important;
+}
+
+.v2-drawer-home > button > span {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+}
+
+.v2-drawer-home b {
+  display: block;
+
+  color: #315f46;
+
+  font-size: 13.5px;
+  font-weight: 800;
+
+  line-height: 1.35;
+}
+
+.v2-drawer-home small {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #818982;
+
+  font-size: 10px;
+  font-weight: 500;
+
+  line-height: 1.4;
+}
+
+
+/* 即時導航維持淡綠提示 */
+.v2-drawer-home .v2-nav-entry {
+  margin-top: 3px !important;
+
+  background: #edf8e9 !important;
+
+  border: 1px solid #d7ead1 !important;
+}
+
+
+/* ---------- 子功能畫面 ---------- */
+
+.v2-drawer-sub {
+  padding: 8px 12px 14px;
+
+  max-height: calc(
+    min(620px, calc(100vh - 190px)) - 68px
+  );
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  box-sizing: border-box;
+
+  font-size: 12px;
+  color: #4c5750;
+
+  scrollbar-width: thin;
+  scrollbar-color: rgba(126,109,104,0.42) transparent;
+}
+
+.v2-drawer-sub::-webkit-scrollbar {
+  width: 6px;
+}
+
+.v2-drawer-sub::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.v2-drawer-sub::-webkit-scrollbar-thumb {
+  background: rgba(126,109,104,0.38);
+  border-radius: 999px;
+}
+
+
+/* ---------- 手機版 ---------- */
+
+@media (max-width: 1024px) {
+
+  .v2-map-drawer {
+    top: 51px;
+
+    width: min(
+      300px,
+      calc(100vw - 28px)
+    );
+
+    max-height: min(
+      560px,
+      calc(100dvh - 190px)
+    );
+  }
+
+  .v2-drawer-head {
+    min-height: 64px;
+
+    padding:
+      10px 11px
+      9px 13px;
+  }
+
+  .v2-drawer-head strong {
+    font-size: 16px;
+  }
+
+  .v2-drawer-home,
+  .v2-drawer-sub {
+    max-height: calc(
+      min(
+        560px,
+        calc(100dvh - 190px)
+      ) - 64px
+    );
+  }
+}
+
+
+/* ---------- 較矮螢幕 ---------- */
+
+@media (max-height: 700px) {
+
+  .v2-map-drawer {
+    max-height: calc(100vh - 165px);
+  }
+
+  .v2-drawer-home,
+  .v2-drawer-sub {
+    max-height: calc(
+      100vh - 165px - 68px
+    );
+  }
+}
+
+
+/* ============================================================
+   2026-09-24 POSITION + HEIGHT FIX
+   1. 三點按鈕往下，避開左上全螢幕按鈕
+   2. 抽屜永遠不超出地圖/視窗底部
+   3. 即時導航以下項目可完整捲動顯示
+   ============================================================ */
+
+/* 整組附加功能往下移 */
+.v2-map-tools {
+  left: 12px !important;
+  top: 158px !important;
+}
+
+/* 展開視窗仍從三點按鈕下方開始 */
+.v2-map-drawer {
+  top: 56px !important;
+
+  /* 158 + 56 = 約 214px，底部再保留 18px */
+  max-height: calc(100dvh - 232px) !important;
+
+  overflow: hidden !important;
+}
+
+/* 標題固定，不參與捲動 */
+.v2-drawer-head {
+  flex: 0 0 68px !important;
+  min-height: 68px !important;
+}
+
+/* 首頁清單只在自己的區域捲動 */
+.v2-drawer-home {
+  max-height: calc(100dvh - 300px) !important;
+
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+
+  padding-bottom: 24px !important;
+
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 子功能頁也採相同高度 */
+.v2-drawer-sub {
+  max-height: calc(100dvh - 300px) !important;
+
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+
+  padding-bottom: 24px !important;
+
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 最後一個功能與底部保留空間 */
+.v2-drawer-home > button:last-child {
+  margin-bottom: 8px !important;
+}
+
+/* 捲軸稍微清楚一點 */
+.v2-drawer-home::-webkit-scrollbar,
+.v2-drawer-sub::-webkit-scrollbar {
+  width: 7px;
+}
+
+.v2-drawer-home::-webkit-scrollbar-thumb,
+.v2-drawer-sub::-webkit-scrollbar-thumb {
+  background: rgba(126,109,104,0.48);
+  border-radius: 999px;
+}
+
+
+/* ============================================================
+   手機 / 平板
+   ============================================================ */
+
+@media (max-width: 1024px) {
+
+  /* 手機上的全螢幕、縮放控制通常更集中，因此再往下 */
+  .v2-map-tools {
+    left: 10px !important;
+    top: 170px !important;
+  }
+
+  .v2-map-drawer {
+    top: 51px !important;
+
+    width: min(
+      300px,
+      calc(100vw - 28px)
+    ) !important;
+
+    /* 170 + 51 = 221px，底部保留約 16px */
+    max-height: calc(100dvh - 237px) !important;
+  }
+
+  .v2-drawer-head {
+    flex-basis: 64px !important;
+    min-height: 64px !important;
+  }
+
+  .v2-drawer-home,
+  .v2-drawer-sub {
+    max-height: calc(100dvh - 301px) !important;
+    padding-bottom: 24px !important;
+  }
+}
+
+
+/* ============================================================
+   特別矮的螢幕
+   ============================================================ */
+
+@media (max-height: 700px) {
+
+  .v2-map-tools {
+    top: 150px !important;
+  }
+
+  .v2-map-drawer {
+    max-height: calc(100dvh - 220px) !important;
+  }
+
+  .v2-drawer-home,
+  .v2-drawer-sub {
+    max-height: calc(100dvh - 288px) !important;
+  }
+}
+
+
+/* ============================================================
+   FINAL LAYOUT FIX 2026-09-24
+   - 三點工具固定在 Leaflet + / - 下方
+   - 抽屜用 top + bottom 撐滿地圖可用高度，不再切掉底部
+   - 標題固定，清單獨立滾動
+   - 全螢幕按鈕由 index.html 移到右上角
+   ============================================================ */
+
+.v2-map-tools{
+  left:12px !important;
+  top:86px !important;
+  bottom:12px !important;
+  z-index:1450 !important;
+  width:46px;
+  pointer-events:none !important;
+}
+
+/* 三點按鈕 */
+.v2-more-btn{
+  position:relative !important;
+  z-index:3 !important;
+  pointer-events:auto !important;
+}
+
+/* 展開面板：從三點按鈕下方一直到地圖底部 */
+.v2-map-drawer{
+  position:absolute !important;
+  left:0 !important;
+  top:56px !important;
+  bottom:0 !important;
+
+  width:310px !important;
+  height:auto !important;
+  max-height:none !important;
+  min-height:0 !important;
+
+  padding:0 !important;
+  overflow:hidden !important;
+
+  display:flex;
+  flex-direction:column;
+
+  background:rgba(255,255,255,.985) !important;
+  border:1px solid rgba(126,109,104,.16) !important;
+  border-radius:16px !important;
+
+  box-shadow:
+    0 14px 38px rgba(0,0,0,.20),
+    0 2px 8px rgba(0,0,0,.08) !important;
+
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+
+  pointer-events:auto !important;
+}
+
+.v2-map-drawer[hidden]{
+  display:none !important;
+}
+
+/* 標題永遠完整留在上面 */
+.v2-drawer-head{
+  position:relative !important;
+  flex:0 0 auto !important;
+
+  min-height:72px !important;
+  padding:13px 13px 11px 15px !important;
+  margin:0 !important;
+
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+
+  background:
+    linear-gradient(180deg,#ffffff 0%,#fbfcfa 100%) !important;
+
+  border-bottom:1px solid #e8ede6 !important;
+}
+
+.v2-drawer-head small{
+  display:block !important;
+  margin:0 0 3px !important;
+
+  color:#8a7b76 !important;
+
+  font-size:11px !important;
+  font-weight:700 !important;
+  line-height:1.2 !important;
+}
+
+.v2-drawer-head strong{
+  display:block !important;
+  margin:0 !important;
+
+  color:#356f4d !important;
+
+  font-size:18px !important;
+  font-weight:900 !important;
+  line-height:1.25 !important;
+  letter-spacing:.2px;
+}
+
+/* X */
+.v2-drawer-head>button{
+  flex:0 0 36px !important;
+  width:36px !important;
+  min-width:36px !important;
+  height:36px !important;
+
+  padding:0 !important;
+  margin:0 !important;
+
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  border:0 !important;
+  border-radius:50% !important;
+
+  background:#eef3ed !important;
+  color:#647168 !important;
+
+  font-size:20px !important;
+  line-height:1 !important;
+
+  box-shadow:none !important;
+  cursor:pointer !important;
+}
+
+/* 關鍵：功能列表取得剩餘高度，超出時自己捲 */
+.v2-drawer-home{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+
+  padding:8px 10px 18px !important;
+
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+
+  pointer-events:auto !important;
+}
+
+/* 子視窗同樣完整使用剩餘高度 */
+.v2-drawer-sub{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+
+  padding:9px 12px 20px !important;
+
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+
+  pointer-events:auto !important;
+}
+
+/* 功能列更精簡，讓一個畫面能看到更多項目 */
+.v2-drawer-home>button{
+  flex:0 0 auto !important;
+
+  min-height:58px !important;
+  padding:8px 10px !important;
+
+  border-radius:11px !important;
+
+  pointer-events:auto !important;
+  touch-action:manipulation;
+}
+
+.v2-drawer-home>button:hover{
+  background:#f2f7ef !important;
+}
+
+.v2-drawer-home>button:active{
+  background:#e6f1e2 !important;
+}
+
+.v2-drawer-home b{
+  font-size:13.5px !important;
+  line-height:1.3 !important;
+}
+
+.v2-drawer-home small{
+  font-size:10px !important;
+  line-height:1.35 !important;
+}
+
+/* 即時導航不再做過大的整塊突出，避免佔空間 */
+.v2-drawer-home .v2-nav-entry{
+  margin-top:2px !important;
+  background:#f1f8ee !important;
+  border:1px solid #dcebd7 !important;
+}
+
+/* 最後一個帳號按鈕一定有底部空間 */
+.v2-drawer-home>button:last-child{
+  margin-bottom:8px !important;
+}
+
+/* 清楚但不搶眼的捲軸 */
+.v2-drawer-home::-webkit-scrollbar,
+.v2-drawer-sub::-webkit-scrollbar{
+  width:6px;
+}
+.v2-drawer-home::-webkit-scrollbar-track,
+.v2-drawer-sub::-webkit-scrollbar-track{
+  background:transparent;
+}
+.v2-drawer-home::-webkit-scrollbar-thumb,
+.v2-drawer-sub::-webkit-scrollbar-thumb{
+  background:rgba(126,109,104,.36);
+  border-radius:999px;
+}
+
+/* 子功能的返回按鈕 */
+.v2-back{
+  position:sticky !important;
+  top:0 !important;
+  z-index:2 !important;
+
+  width:100% !important;
+  padding:8px 8px !important;
+  margin:0 0 8px !important;
+
+  border:1px solid #e2eadf !important;
+  border-radius:9px !important;
+
+  background:rgba(248,251,247,.98) !important;
+  color:#356f4d !important;
+
+  text-align:left !important;
+  font-size:11.5px !important;
+  font-weight:800 !important;
+
+  cursor:pointer !important;
+  pointer-events:auto !important;
+}
+
+/* 全螢幕時保持層級 */
+.map-wrap:fullscreen .v2-map-tools,
+.map-wrap:-webkit-full-screen .v2-map-tools{
+  z-index:2300 !important;
+}
+
+/* 手機 / 平板 */
+@media(max-width:1024px){
+  .v2-map-tools{
+    left:10px !important;
+    top:86px !important;
+    bottom:74px !important;
+  }
+
+  .v2-map-drawer{
+    top:53px !important;
+    bottom:0 !important;
+    width:min(310px,calc(100vw - 24px)) !important;
+  }
+
+  .v2-drawer-head{
+    min-height:66px !important;
+    padding:11px 12px 10px 14px !important;
+  }
+
+  .v2-drawer-head strong{
+    font-size:17px !important;
+  }
+
+  .v2-drawer-home>button{
+    min-height:55px !important;
+  }
+}
+
+/* 特別矮的螢幕：仍靠內部捲軸，不再裁切抽屜 */
+@media(max-height:650px){
+  .v2-map-tools{
+    top:82px !important;
+    bottom:8px !important;
+  }
+
+  .v2-map-drawer{
+    top:51px !important;
+  }
+
+  .v2-drawer-head{
+    min-height:60px !important;
+    padding:9px 11px !important;
+  }
+
+  .v2-drawer-home>button{
+    min-height:50px !important;
+    padding:6px 9px !important;
+  }
+}
+
+
+/* ===== 2026-09-25 單檔整合版 UI ===== */
+body.v2-modal-open{overflow:hidden}
+.v2-feature-modal{position:fixed;inset:0;z-index:50000;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box}
+.v2-feature-modal[hidden]{display:none!important}
+.v2-feature-backdrop{position:absolute;inset:0;background:rgba(49,64,53,.43);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.v2-feature-window{position:relative;z-index:1;width:min(610px,calc(100vw - 40px));max-height:min(720px,calc(100dvh - 48px));display:flex;flex-direction:column;overflow:hidden;background:#fbfdf9;border:1px solid rgba(63,127,85,.16);border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.28);color:#425047}
+.v2-feature-header{flex:0 0 auto;min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px 18px 14px 22px;box-sizing:border-box;background:#fff;border-bottom:1px solid #e4ebe1}
+.v2-feature-header small{display:block;margin-bottom:2px;color:#8a7b76;font-size:11px;font-weight:700}
+.v2-feature-header h2{margin:0;color:#315f46;font-size:21px;line-height:1.25;font-weight:900}
+.v2-modal-close{flex:0 0 42px;width:42px!important;height:42px!important;min-width:42px!important;padding:0!important;margin:0!important;display:grid!important;place-items:center;border:1px solid #dfe9dc!important;border-radius:50%!important;background:#f6faf4!important;color:#315f46!important;font-size:27px!important;line-height:1!important;box-shadow:none!important;cursor:pointer!important}
+.v2-modal-close:hover{background:#eaf4e6!important}
+.v2-feature-body{flex:1 1 auto;min-height:0;overflow:auto;padding:20px 24px 24px;box-sizing:border-box;scrollbar-width:thin;scrollbar-color:rgba(126,109,104,.35) transparent}
+.v2-feature-body label{display:block;margin:13px 0 6px;color:#5a675e;font-size:13px;font-weight:800}
+.v2-feature-body select,.v2-feature-body input,.v2-feature-body textarea{width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #d7e1d4;border-radius:11px;background:#fff;color:#435047;font-size:13px}
+.v2-feature-body .v2-note{margin:0 0 14px;padding:11px 12px;border:1px solid #dce9d7;border-radius:11px;background:#f1f7ee;font-size:12px;line-height:1.65}
+.v2-feature-body .v2-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.v2-feature-body button.primary,.v2-feature-body .v2-actions button.primary{padding:10px 14px!important;border:1px solid #2f7d50!important;border-radius:10px!important;background:#258d56!important;color:#fff!important;font-weight:800!important}
+.v2-feature-body .v2-actions button:not(.primary){padding:10px 14px!important;border:1px solid #d7e1d4!important;border-radius:10px!important;background:#fff!important;color:#536058!important;font-weight:800!important}
+.v2-feature-body .v2-wide{width:100%!important}
+.v2-feature-body .v2-poi-list{max-height:330px;overflow:auto}
+.v2-feature-body .v2-weather-card{margin:9px 0;padding:12px;border:1px solid #e2e8df;border-radius:11px;background:#fff}
+.detour-integrated{position:relative;margin:10px 0;padding:10px 11px;background:#f7f8f4;border:1px solid #e3e8df;border-radius:11px}
+.detour-title-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}
+.detour-title-row label{margin:0!important;color:#56635b;font-size:11.5px;line-height:1.4}
+.detour-info-btn{flex:0 0 28px;width:28px!important;height:28px!important;min-width:28px!important;padding:0!important;margin:0!important;display:grid!important;place-items:center;border:1px solid #b9cbb8!important;border-radius:50%!important;background:#f2f7ef!important;color:#356f4d!important;font-size:17px!important;font-weight:800!important;line-height:1!important;box-shadow:none!important;cursor:pointer!important}
+.detour-info-popover{position:absolute;left:8px;right:8px;top:43px;z-index:40;padding:11px 12px;background:#fff;color:#5c655f;border:1px solid #d9e4d6;border-radius:10px;box-shadow:0 10px 28px rgba(0,0,0,.16);font-size:11px;line-height:1.65}
+.detour-info-popover[hidden]{display:none!important}
+.detour-integrated select{width:100%;margin:0!important;padding:8px 10px!important}
+.chiayi-bike-popup{min-width:150px;color:#46534b;line-height:1.55}.chiayi-bike-popup b{color:#9a5138;font-size:13px}
+@media(max-width:700px){.v2-feature-modal{align-items:flex-end;padding:10px}.v2-feature-window{width:100%;max-height:82dvh;border-radius:18px 18px 14px 14px}.v2-feature-header{min-height:66px;padding:11px 12px 10px 16px}.v2-feature-header h2{font-size:18px}.v2-feature-body{padding:15px 15px 20px}}
+
+
+/* 2026-09-26：展開說明、街景位置、直式工具與天氣卡片 */
+.detour-info-popover{position:static;margin:8px 0;box-shadow:none;font-size:12px}
+.detour-info-btn{margin-bottom:8px!important}
+.streetview-pegman{top:12px;right:80px;z-index:1100}
+.streetview-hint{top:58px;right:80px;z-index:1099;white-space:normal;max-width:210px}
+.streetview-hint::after{display:none}
+.leaflet-control-layers-expanded{margin-top:58px!important}
+.v2-feature-window{width:min(420px,calc(100vw - 32px));height:min(720px,calc(100dvh - 48px))}
+.v2-feature-body .v2-weather-card h3{margin:0 0 12px;font-size:12px;color:#647267;line-height:1.6}
+.v2-weather-location{font-size:13px;color:#476b53}
+.v2-weather-summary{display:flex;align-items:center;gap:14px;font-size:17px;color:#315f46;margin-bottom:16px}
+.v2-weather-icon{font-size:42px;line-height:1.2}
+.v2-weather-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.v2-weather-metrics>div{padding:10px 4px;border-radius:10px;background:#f0f6ed;text-align:center}
+.v2-weather-metrics span{display:block;font-size:11px;color:#657363}
+.v2-weather-metrics strong{display:block;margin-top:6px;font-size:19px;color:#315f46}
+.v2-weather-details{margin-top:12px;font-size:12px;line-height:1.7}
+.v2-weather-details summary{cursor:pointer;color:#426d50}
+@media(max-width:700px){.v2-feature-window{height:82dvh;max-height:82dvh}.streetview-pegman{top:12px;right:78px}.streetview-hint{top:58px;right:78px}.v2-feature-body{padding:14px}}
+
+/* Local library, account settings and reports */
+.community-body .community-card{padding:12px;margin:12px 0;border:1px solid #dbe6d8;border-radius:12px;background:#fff}
+.community-body p,.community-body small{overflow-wrap:anywhere;line-height:1.65}
+.community-body button{padding:10px 12px;margin:6px 4px 6px 0;border:1px solid #cbdcc6;border-radius:9px;background:#f0f7ec;color:#315f46;cursor:pointer}
+.community-body button:disabled{opacity:.55;cursor:default}
+.community-body label.community-check{display:flex;align-items:flex-start;gap:9px;line-height:1.6}
+.community-body .community-check input{width:18px;min-width:18px;height:18px;margin:3px 0}
+.community-body textarea{resize:vertical;min-height:80px}
+.community-body h3{font-size:16px;color:#315f46}
+.pwa-status{position:fixed;bottom:85px;left:50%;transform:translateX(-50%);z-index:30000;background:#fff4cd;color:#614b15;padding:8px 14px;border-radius:10px;max-width:85vw;font-size:13px}

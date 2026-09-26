@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+
+<html lang="zh-Hant">
+<head>
+<!-- SPLIT BUILD 2026-09-26: index.html + style.css + app.js + data/ -->
+
+<!-- SINGLE-FILE BUILD 2026-09-25 / freeze-fix -->
+<meta charset="utf-8"/>
+<link rel="manifest" href="manifest.webmanifest"/>
+<meta name="theme-color" content="#315f46"/>
+<link rel="apple-touch-icon" href="icons/icon-192.png"/>
+<title>樹導航｜Geo-AI綠色健康導航系統（試作版）</title>
+<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" name="viewport"/>
+<link href="https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Emblem_of_Chiayi_City.svg/250px-Emblem_of_Chiayi_City.svg.png" rel="icon" type="image/png"/>
+
+
+<link href="style.css?v=community-20260926-1" rel="stylesheet"/></head>
+<body>
+
+<!-- ============================================================
+     系統歡迎畫面
+     ============================================================ -->
+<div class="welcome-overlay" id="welcomeOverlay">
+<div class="welcome-card">
+<div class="welcome-icon welcome-logo-icon">
+<img alt="嘉義市 Logo" src="https://storage.googleapis.com/chiayi_ndvi/%E5%98%89%E7%BE%A9%E5%B8%82logo%20(2).png"/>
+</div>
+<h2 class="welcome-title">
+      歡迎使用嘉義市綠色健康導航
+    </h2>
+<p class="welcome-intro">
+      本系統以嘉義市為範圍，比較最短路徑、
+      <strong>高綠暴露（reNDVI）路徑</strong>與
+      <strong>高綠視率（GVI）路徑</strong>，
+      協助你找到兼顧時間與沿途綠意的移動方式。
+    </p>
+<div class="welcome-steps">
+<div class="welcome-step">
+<div class="welcome-step-number">1</div>
+<div>
+          開啟<strong>「設定起／終點」</strong>，選擇位置與交通方式。
+        </div>
+</div>
+<div class="welcome-step">
+<div class="welcome-step-number">2</div>
+<div>
+          點選<strong>「規畫路徑」</strong>，比較三種路徑的距離、時間、綠暴露與綠視率提升。
+        </div>
+</div>
+<div class="welcome-step">
+<div class="welcome-step-number">3</div>
+<div>
+          可切換<strong>福衛八號影像、樹木影像分類、reNDVI、道路綠暴露（reNDVI）與道路綠視率（GVI）</strong>等圖層。
+        </div>
+</div>
+</div>
+<div class="welcome-streetview-note">
+      🟡 想查看實際道路街景時，可將地圖右上角的<strong>小黃人拖放到道路路段</strong>，即可開啟該位置的街景影像。
+    </div>
+<div class="welcome-data-note">
+<div>
+<strong>高綠暴露路徑</strong>利用福衛八號（齊柏林衛星）reNDVI 評估道路周邊植生；
+        <strong>高綠視率（GVI）路徑</strong>則以街道視角中可見綠色植生所占的比例規劃。
+        兩者並結合道路資料進行分析。
+      </div>
+</div>
+<div class="welcome-warning">
+      本系統為試作版，定位、路況與通行限制仍請以現場狀況為準。
+    </div>
+<button class="welcome-start-btn" id="startUsingBtn" onclick="enterMainSite()" type="button">
+      開始使用
+    </button>
+</div>
+</div>
+<header id="top-bar">
+<!-- 左側：嘉義市 Logo + 系統名稱 -->
+<div class="header-left">
+<img alt="嘉義市" class="logo logo-chiayi" src="https://storage.googleapis.com/chiayi_ndvi/%E5%98%89%E7%BE%A9%E5%B8%82logo%20(2).png"/>
+<div class="title-container">
+<div class="title-text-group">
+<h1 class="main-title">
+          樹導航｜Geo-AI綠色健康導航系統
+          <span class="version-tag">試作版</span>
+</h1>
+<div class="header-subtitle">找出「看得到更多樹、綠色暴露更高」的路線</div>
+</div>
+</div>
+</div>
+<!-- 右側：研究團隊 + Logo -->
+<div class="header-right">
+<!-- 研究團隊 -->
+<div class="team-info">
+<span class="team-label">
+        研究<br/>團隊
+      </span>
+<span class="team-members">
+<span class="team-member">吳治達 教授、</span>
+<span class="team-member">林宇家、</span>
+<span class="team-member">林祐如、</span>
+<span class="team-member">黃芊綾、</span>
+<span class="team-member">宋健豪、</span>
+<span class="team-member">蘇均珺、</span>
+<span class="team-member">許家瑋</span>
+</span>
+</div>
+<!-- 實驗室 / 成大 / TASA Logo -->
+<div class="partner-logos">
+<img alt="實驗室" class="partner-logo logo-lab" src="https://storage.googleapis.com/chiayi_ndvi/%E5%AF%A6%E9%A9%97%E5%AE%A4_%E7%B4%85%E8%89%B2%E9%95%B7%E6%96%B9%E5%BD%A2.jpg"/>
+<img alt="國立成功大學" class="partner-logo logo-ncku" src="https://storage.googleapis.com/chiayi_ndvi/NCKU.jpg"/>
+<img alt="TASA" class="partner-logo logo-tasa" src="https://storage.googleapis.com/chiayi_ndvi/TASA.png"/>
+</div>
+</div>
+</header>
+<div class="layout">
+<div class="panel-controls">
+<div class="mobile-panel-head">
+<div class="panel-title">控制面板</div>
+<button class="panel-close" id="closeControlPanel" type="button">×</button>
+</div>
+<div class="infoBox" id="pointInfo">請點選地圖以設定起點與終點</div>
+<button class="btn ghost" id="locateBtn">📍 使用目前位置設定起點</button>
+<div class="panel-divider"></div>
+<div class="addr-search-group">
+<label>
+        利用地址設定起點/終點
+      </label>
+<div class="addr-autocomplete-wrap">
+<input aria-autocomplete="list" aria-controls="addrSuggestions" aria-expanded="false" autocomplete="off" id="addrInput" placeholder="請輸入地址..." type="text"/>
+<div aria-label="地址搜尋建議" class="addr-suggestions" id="addrSuggestions" role="listbox">
+</div>
+</div>
+<div class="addr-button-row">
+<button class="btn ghost" id="setStartByAddr">
+          設為起點
+        </button>
+<button class="btn ghost" id="setEndByAddr">
+          設為終點
+        </button>
+</div>
+</div>
+<div class="control-card">
+<label>交通方式</label>
+<select id="modeSelect">
+<option value="walk">步行 (3 km/h)</option>
+<option value="bike">腳踏車 (20 km/h)</option>
+</select>
+<button class="btn secondary" id="dualPathBtn">
+      規劃路徑
+    </button>
+<div class="route-display-control" id="routeDisplayControl" style="display:none;">
+<div class="route-display-title">
+        路徑顯示
+      </div>
+<div class="route-display-buttons">
+<button class="route-display-btn active" data-route-display="all" type="button">
+          全部
+        </button>
+<button class="route-display-btn" data-route-display="ndvi" type="button">
+          綠暴露
+        </button>
+<button class="route-display-btn" data-route-display="gvi" type="button">
+          綠視率
+        </button>
+</div>
+<div class="route-color-title">
+        路線著色
+      </div>
+<div class="route-color-buttons">
+<button class="route-color-btn active" data-route-color="solid" type="button">單色</button>
+<button class="route-color-btn" data-route-color="rendvi" type="button">依綠暴露程度</button>
+<button class="route-color-btn" data-route-color="gvi" type="button">依綠視率程度</button>
+</div>
+</div>
+</div> <!-- /control-card -->
+<button class="btn ghost" id="resetBtn">
+      重新設定
+    </button>
+<div class="muted" style="margin-top:8px">
+      提示：最短路徑固定顯示，並依所選指標比較 reNDVI、GVI 綠色路徑。
+    
+    </div> <!-- 關閉 .panel-controls -->
+</div>
+<div class="map-wrap">
+<div class="mobile-bottom-bar">
+<!-- 1. 設定 -->
+<button class="mobile-bottom-btn" id="mobileControlBtn" type="button">
+<span class="mobile-btn-icon">📍</span>
+<span>設定</span>
+</button>
+<!-- 2. 成果 -->
+<button class="mobile-bottom-btn" id="mobileInfoBtn" type="button">
+<span class="mobile-btn-icon">📊</span>
+<span>成果</span>
+</button>
+<!-- 3. 規劃：正中央 -->
+<button class="mobile-bottom-btn mobile-route-main" id="mobileRouteBtn" type="button">
+<span class="mobile-btn-icon">🧭</span>
+<span>規劃</span>
+</button>
+<!-- 4. 路徑 -->
+<button class="mobile-bottom-btn" id="mobilePathDisplayBtn" type="button">
+<span class="mobile-btn-icon">🛣️</span>
+<span>路徑</span>
+</button>
+<!-- 5. 重置 -->
+<button class="mobile-bottom-btn mobile-reset-btn" id="mobileResetBtn" type="button">
+<span class="mobile-btn-icon">↻</span>
+<span>重置</span>
+</button>
+</div>
+<!-- 手機版路徑顯示小選單 -->
+<div class="mobile-path-popup" id="mobilePathPopup">
+<div class="mobile-path-popup-header">
+<div class="mobile-path-popup-title">
+          路徑顯示
+        </div>
+<button aria-label="關閉路徑顯示視窗" class="mobile-path-popup-close" id="closeMobilePathPopup" type="button">
+          ×
+        </button>
+</div>
+<button class="mobile-path-option active" data-mobile-route="all" type="button">
+        全部
+      </button>
+<button class="mobile-path-option" data-mobile-route="ndvi" type="button">
+        綠暴露
+      </button>
+<button class="mobile-path-option" data-mobile-route="gvi" type="button">
+        綠視率
+      </button>
+<div class="mobile-path-subtitle">路線著色</div>
+<button class="mobile-color-option active" data-mobile-color="solid" type="button">單色</button>
+<button class="mobile-color-option" data-mobile-color="rendvi" type="button">依綠暴露程度</button>
+<button class="mobile-color-option" data-mobile-color="gvi" type="button">依綠視率程度</button>
+</div>
+<div id="map"></div>
+<!-- Street View 功能提示 -->
+<div class="streetview-hint" id="streetViewHint">
+
+      可拖移至路徑上查看街景
+
+    </div>
+<div aria-label="拖曳到道路上查看街景" class="streetview-pegman" id="streetViewPegman" title="拖曳到道路上查看街景">
+<div class="pegman-head"></div>
+<div class="pegman-body">
+<div class="pegman-arm pegman-arm-left"></div>
+<div class="pegman-arm pegman-arm-right"></div>
+<div class="pegman-leg pegman-leg-left"></div>
+<div class="pegman-leg pegman-leg-right"></div>
+</div>
+</div>
+</div>
+<div class="panel-stats">
+<button class="panel-close" id="closeStatsPanel" type="button">×</button>
+<!-- =====================================================
+       右側面板切換按鈕
+       ===================================================== -->
+<div class="panel-tabs">
+<button class="panel-tab active" id="ndviResultTabBtn" type="button">
+      🌿 最高綠暴露
+    </button>
+<button class="panel-tab" id="gviResultTabBtn" type="button">
+      🌳 最高綠視率
+    </button>
+</div>
+<!-- =====================================================
+       分頁 1：原本的統計資訊
+       ===================================================== -->
+<div class="panel-view active mode-single" id="infoView">
+<!-- ⭐⭐⭐ 這裡開始放你原本的東西 ⭐⭐⭐ -->
+<div class="green-gain-grid">
+<!-- =====================================================
+       reNDVI 綠暴露增益
+       ===================================================== -->
+<div id="rendviBlock">
+<div class="stat-title">
+
+      🌿 綠暴露提升率
+
+      <button id="rendviInfoBtn" style="border:none;background:none;cursor:pointer;padding:0 2px;" type="button">
+        💡
+      </button>
+</div>
+<div class="progress-wrap">
+<div class="progress-number" id="rendviPercent">
+        0%
+      </div>
+<div class="progress-bar">
+<div class="progress-fill" id="rendviFill">
+          0%
+        </div>
+</div>
+</div>
+</div>
+<!-- =====================================================
+       GVI 綠視率提升
+       ===================================================== -->
+<div id="regviBlock" style="display:none;">
+<div class="stat-title">
+
+      🌳 綠視率提升率
+
+      <button id="gviInfoBtn" style="border:none;background:none;cursor:pointer;padding:0 2px;" type="button">
+        💡
+      </button>
+</div>
+<div class="progress-wrap">
+<div class="progress-number" id="regviPercent">
+        0%
+      </div>
+<div class="progress-bar">
+<div class="progress-fill" id="regviFill">
+          0%
+        </div>
+</div>
+</div>
+</div>
+</div>
+<div class="compact-metric-box carbon-metric-box">
+<div class="stat-title carbon-title-row">
+<span>🔋負碳存摺 (g CO₂)</span>
+<button aria-label="負碳存摺說明" class="metric-info-btn" id="carbonInfoBtn" title="負碳存摺說明" type="button">💡</button>
+</div>
+<div class="time-box">
+<div class="time-row">
+<div>
+<span class="dot" style="background:#f1d58b">
+</span>
+          最短路徑
+        </div>
+<div id="shortCarbon">—</div>
+</div>
+<div class="time-row" id="ndviCarbonRow">
+<div>
+<span class="dot" style="background:#a4ee73">
+</span>
+          高綠暴露路徑
+        </div>
+<div id="ndviCarbon">—</div>
+</div>
+<div class="time-row" id="gviCarbonRow" style="display:none;">
+<div>
+<span class="dot" style="background:#0ac247">
+</span>
+          高綠視率路徑
+        </div>
+<div id="gviCarbon">—</div>
+</div>
+</div>
+</div> <!-- /carbon-metric-box -->
+<div class="compact-metric-box time-metric-section">
+<div class="stat-title secondary-stat-title">⌛ 時間估計（距離／分鐘）</div>
+<div class="time-box route-time-box">
+<div class="time-row">
+<div><span class="dot" style="background:#f1d58b"></span>最短路徑</div>
+<div id="shortInfo">—</div>
+</div>
+<div class="time-row" id="ndviInfoRow">
+<div><span class="dot" style="background:#a4ee73"></span>高綠暴露路徑</div>
+<div id="ndviInfo">—</div>
+</div>
+<div class="time-row" id="gviInfoRow" style="display:none;">
+<div><span class="dot" style="background:#0ac247"></span>高綠視率路徑</div>
+<div id="gviInfo">—</div>
+</div>
+</div>
+</div> <!-- /time-metric-section -->
+<div class="health-section-box">
+<div class="stat-title health-section-title">
+      👣健康步帳 (身高設定)
+      <button id="stepsInfoBtn" style="border:none;background:none;cursor:pointer;">💡</button>
+</div>
+<div class="height-control-row" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+<input id="heightSlider" max="200" min="140" type="range" value="170"/>
+<span style="font-size:12px;font-weight:700;white-space:nowrap;">
+<span id="heightVal">170</span>cm
+      </span>
+</div>
+<div class="health-account-box">
+<div class="health-grid two-cols" id="healthGrid">
+<div class="health-card">
+<div class="muted">最短路徑</div>
+<div class="health-value" id="shortStepsVal" style="color:#9A7A18;">
+          0
+        </div>
+</div>
+<div class="health-card" id="ndviStepsBox">
+<div class="muted">
+          高綠暴露路徑
+        </div>
+<div class="health-value" id="ndviStepsVal" style="color:#4F7D2A;">
+          0
+        </div>
+</div>
+<div class="health-card" id="gviStepsBox" style="display:none;">
+<div class="muted">
+          高綠視率路徑
+        </div>
+<div class="health-value" id="gviStepsVal" style="color:#0ac247;">
+          0
+        </div>
+</div>
+</div>
+<div class="health-extra-grid">
+<div class="health-card">
+<div class="muted">
+          🔥 卡路里
+        </div>
+<div class="health-value" id="kcalInfoVal">
+          0.0 kcal
+        </div>
+</div>
+<div class="health-card">
+<div class="muted">
+          ⏳ 預期壽命效益
+        </div>
+<div class="health-value" id="lifeInfoVal">
+          0.0 分鐘
+        </div>
+</div>
+</div>
+</div>
+</div> <!-- /health-section-box -->
+</div>
+</div>
+</div>
+<!-- Leaflet 與 GeoRaster 套件 -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/proj4@2.11.0/dist/proj4.js"></script>
+<script src="https://unpkg.com/georaster/dist/georaster.browser.min.js"></script>
+<script src="https://unpkg.com/georaster-layer-for-leaflet/dist/georaster-layer-for-leaflet.min.js"></script>
+<script src="https://unpkg.com/chroma-js@2.4.2/chroma.min.js"></script>
+<script async="" defer="" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCQGlyAvg-xDSWPbhYbvnk8X8FLfSmUbWg&amp;libraries=geometry"></script>
+<div class="streetview-modal" id="streetViewModal">
+<div class="streetview-window">
+<div class="streetview-header">
+<div>
+        🌐 道路街景
+      </div>
+<button class="streetview-close" id="closeStreetViewModal" type="button">
+        ×
+      </button>
+</div>
+<div class="streetview-content" id="streetViewModalMap">
+</div>
+</div>
+</div>
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
+<script src="community-config.js?v=20260926-2"></script>
+<script src="route-records.js?v=20260926-1"></script>
+<script src="community.js?v=20260926-1"></script>
+<script src="navigation-quality.js?v=20260926-1"></script>
+<script src="traffic-chiayi.js?v=20260926-1"></script>
+<script src="pwa-chiayi.js?v=20260926-1"></script>
+<script src="app.js?v=community-20260926-1"></script></body>
+</html>
