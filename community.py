@@ -69,6 +69,7 @@ class Report(Strict):
 class Review(Strict):
     status: Literal['pending', 'reviewing', 'resolved', 'dismissed']
     reply: str = Field(default='', max_length=500)
+    public_reply: str = Field(default='', max_length=500)
 
 
 def configured():
@@ -199,6 +200,9 @@ def submit_report(body: Report, request: Request, response: Response):
         if count.get('count', 0) >= 10:
             raise HTTPException(429, '今日回報已達 10 筆，請明日再試')
         tx.set(quota, {'count': count.get('count', 0) + 1, 'expires_at': now + timedelta(days=2)})
+        tx.create(db.collection('chiayi_admin_notifications').document(str(body.id)), {
+            'title': '收到新的路況回報', 'report_id': str(body.id), 'created_at': now,
+            'expires_at': now + timedelta(days=90)})
         tx.create(ref, {**value, 'digest': digest, 'status': 'pending', 'reply': '',
                         'created_at': now, 'updated_at': now, 'expires_at': now + timedelta(days=90)})
     try:
@@ -232,7 +236,7 @@ def reports(request: Request, response: Response, cursor: str | None = None):
         rows = []
         for doc in docs[:50]:
             row = doc.to_dict()
-            rows.append({'id': doc.id, **{k: row.get(k) for k in ('category', 'location', 'note', 'point', 'status', 'reply', 'created_at', 'updated_at')}})
+            rows.append({'id': doc.id, **{k: row.get(k) for k in ('category', 'location', 'note', 'point', 'status', 'reply', 'public_reply', 'created_at', 'updated_at')}})
         return {'rows': rows, 'next': docs[49].id if len(docs) > 50 else None}
     except Exception:
         raise HTTPException(503, '無法讀取回報，請確認 Firestore 設定') from None
@@ -241,11 +245,99 @@ def reports(request: Request, response: Response, cursor: str | None = None):
 @router.patch('/admin/reports/{report_id}')
 def review(report_id: UUID, body: Review, request: Request, response: Response):
     guard(request, response, admin=True)
-    from google.api_core.exceptions import NotFound
+    from google.cloud import firestore
+    from uuid import uuid4
+    db = services()[2]
+    ref = db.collection('chiayi_reports').document(str(report_id))
+    now = datetime.now(timezone.utc)
+    notice_id = str(uuid4())
+    @firestore.transactional
+    def commit(tx):
+        snap = ref.get(transaction=tx)
+        if not snap.exists:
+            raise HTTPException(404, '回報不存在')
+        old = snap.to_dict()
+        tx.update(ref, {**body.model_dump(), 'updated_at': now})
+        if old.get('status') != body.status or old.get('public_reply', '') != body.public_reply:
+            notice = db.collection('chiayi_notifications').document(old['owner']).collection('items').document(notice_id)
+            tx.create(notice, {'title': '你的路況回報有新進度', 'report_id': str(report_id),
+                'status': body.status, 'public_reply': body.public_reply, 'created_at': now,
+                'expires_at': now + timedelta(days=90), 'read': False})
     try:
-        services()[2].collection('chiayi_reports').document(str(report_id)).update({**body.model_dump(), 'updated_at': datetime.now(timezone.utc)})
-    except NotFound:
-        raise HTTPException(404, '回報不存在') from None
+        commit(db.transaction())
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(503, '回報狀態暫時無法更新') from None
     return {'ok': True}
+
+
+def inbox(user, audience):
+    db = services()[2]
+    if audience == 'admin':
+        if not is_admin(user):
+            raise HTTPException(403, '只有管理員可查看通知')
+        return db.collection('chiayi_admin_notifications')
+    return db.collection('chiayi_notifications').document(document_id(user['uid'])).collection('items')
+
+
+@router.get('/notifications')
+def notifications(request: Request, response: Response, audience: Literal['user', 'admin'] = 'user', cursor: str | None = None):
+    user = guard(request, response)
+    from google.cloud import firestore
+    collection = inbox(user, audience)
+    query = collection.order_by('created_at', direction=firestore.Query.DESCENDING)
+    if cursor:
+        try:
+            UUID(cursor)
+        except ValueError:
+            raise HTTPException(422, '無效分頁') from None
+        snap = collection.document(cursor).get()
+        if not snap.exists:
+            raise HTTPException(400, '分頁已失效，請重新整理')
+        query = query.start_after(snap)
+    try:
+        docs = list(query.limit(51).stream())
+        rows = []
+        for doc in docs[:50]:
+            row = doc.to_dict()
+            if audience == 'admin':
+                receipt = doc.reference.collection('readers').document(document_id(user['uid'])).get()
+                row['read'] = receipt.exists
+            rows.append({'id': doc.id, **{k: row.get(k) for k in ('title','report_id','status','public_reply','created_at','read')}})
+        return {'rows': rows, 'next': docs[49].id if len(docs)>50 else None}
+    except Exception:
+        raise HTTPException(503, '通知暫時無法讀取，請稍後再試') from None
+
+
+@router.post('/notifications/{notice_id}/read')
+def read_notice(notice_id: UUID, request: Request, response: Response, audience: Literal['user','admin'] = 'user'):
+    user = guard(request, response)
+    ref = inbox(user, audience).document(str(notice_id))
+    if not ref.get().exists:
+        raise HTTPException(404, '通知不存在')
+    if audience == 'admin':
+        ref.collection('readers').document(document_id(user['uid'])).set({'read_at': datetime.now(timezone.utc)})
+    else:
+        ref.update({'read': True})
+    return {'ok': True}
+
+
+@router.get('/my-reports')
+def my_reports(request: Request, response: Response, cursor: str | None = None):
+    user = guard(request, response)
+    collection = services()[2].collection('chiayi_reports')
+    # Equality-only query uses an automatic index. Pagination is by document ID.
+    query = collection.where('owner', '==', document_id(user['uid']))
+    if cursor:
+        try:
+            UUID(cursor)
+        except ValueError:
+            raise HTTPException(422, '無效分頁') from None
+        snap = collection.document(cursor).get()
+        if not snap.exists or snap.to_dict().get('owner') != document_id(user['uid']):
+            raise HTTPException(400, '分頁已失效')
+        query = query.start_after(snap)
+    docs = list(query.limit(51).stream())
+    rows = [{'id': d.id, **{k: d.to_dict().get(k) for k in ('category','location','note','status','public_reply','created_at','updated_at')}} for d in docs[:50]]
+    return {'rows': rows, 'next': docs[49].id if len(docs)>50 else None}

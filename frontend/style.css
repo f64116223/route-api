@@ -5453,3 +5453,26 @@ body.v2-modal-open{overflow:hidden}
 .community-body textarea{resize:vertical;min-height:80px}
 .community-body h3{font-size:16px;color:#315f46}
 .pwa-status{position:fixed;bottom:85px;left:50%;transform:translateX(-50%);z-index:30000;background:#fff4cd;color:#614b15;padding:8px 14px;border-radius:10px;max-width:85vw;font-size:13px}
+
+/* Chiayi tools: visible legends, stable side actions and retained tool dock. */
+.bike-info-card,.chiayi-traffic-legend{background:#fff!important;color:#294d3b!important;border:1px solid #d7e4d9;border-radius:16px;padding:16px;box-shadow:0 5px 24px #17372826;width:290px;max-width:calc(100vw - 48px);max-height:35vh;overflow:auto;font:13px/1.6 system-ui,sans-serif}
+.bike-info-head{display:flex;justify-content:space-between;gap:12px}.bike-info-title{font-size:16px;font-weight:800}.bike-info-close{background:#f3f7f2;border:0;border-radius:8px;width:30px;height:30px;cursor:pointer}.bike-info-detail{margin-top:10px}.bike-info-card summary{cursor:pointer;margin-top:10px}.chiayi-traffic-legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}.chiayi-traffic-legend p{margin:7px 0}
+.chiayi-side-actions{display:flex;flex-wrap:wrap;gap:6px;padding:10px 0;position:relative;z-index:2}.chiayi-side-actions button,.chiayi-header-actions button,#toolDock button{background:#fff;border:1px solid #cadcc9;color:#285b42;border-radius:10px;padding:10px;cursor:pointer;font-weight:700;min-height:42px}.chiayi-header-actions{display:flex;gap:6px;align-items:center}.chiayi-header-actions button{font-size:18px;min-width:42px}
+#toolDock{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:6px;max-width:80%;overflow-x:auto;z-index:1005;padding:4px;background:#f7faf5e8;border-radius:12px}#toolDock:empty{display:none}#toolDock button{white-space:nowrap;box-shadow:0 2px 8px #23452b18}
+#streetViewPegman{border-radius:8px!important;width:44px!important;height:44px!important;background:#fff!important;border:1px solid #cedccf;box-shadow:0 3px 12px #23452b25}#streetViewPegman[hidden],.v2-feature-body[hidden]{display:none!important}
+.leaflet-control-layers{z-index:1100!important;pointer-events:auto}.leaflet-control-layers-expanded{max-height:65vh;overflow:auto}.leaflet-control-layers-toggle{touch-action:manipulation}
+.v2-feature-header{gap:8px}.v2-feature-header>div{flex:1}.v2-feature-header .v2-modal-close{flex:0 0 36px;width:36px;height:36px}.v2-feature-body button{cursor:pointer}#alongResults>button{display:block;margin:8px 0;width:100%;text-align:left}
+@media(max-width:768px){.chiayi-header-actions{gap:3px}.chiayi-header-actions button{padding:5px;min-width:34px;font-size:16px}#toolDock{max-width:94%;bottom:72px}.bike-info-card,.chiayi-traffic-legend{width:240px;max-height:28vh}.chiayi-side-actions button{flex:1;padding:8px;font-size:13px}}
+
+@media(min-width:769px){header#top-bar .header-left{min-width:0;flex:1}header#top-bar .title-container{min-width:0}header#top-bar .main-title{white-space:normal;font-size:clamp(14px,1.35vw,22px)}header#top-bar .header-right{flex-shrink:0}header#top-bar .team-info{max-width:260px;white-space:normal}header#top-bar .team-members{white-space:normal;flex-wrap:wrap}}
+@media(max-width:1350px) and (min-width:769px){header#top-bar .team-info{display:none}}
+
+/* Expansion must not move the control away from the pointer. */
+.leaflet-control-layers-expanded{margin-top:10px!important}
+
+
+/* Generic mobile header rules must not turn a dialog heading into a fixed page bar. */
+.v2-feature-modal .v2-feature-header,.v2-map-drawer .v2-drawer-head{position:static!important;inset:auto!important;transform:none!important;display:flex!important;flex-direction:row!important;align-items:center!important;width:auto!important;height:auto!important;flex-wrap:nowrap!important;text-align:left!important;flex-shrink:0}
+.v2-feature-modal .v2-feature-header h2{margin:0}.v2-feature-modal .v2-feature-header>div{min-width:0}.v2-feature-modal .v2-feature-header .v2-modal-close{margin:0!important}
+
+@media(max-width:1024px){header#top-bar .team-info{display:none!important}header#top-bar .header-right{justify-content:space-between;gap:8px!important;width:100%}header#top-bar .partner-logos{gap:5px!important}header#top-bar .partner-logo{max-width:54px;height:22px!important} .leaflet-top.leaflet-left,.leaflet-top.leaflet-right{top:var(--chiayi-controls-top,115px)!important}}

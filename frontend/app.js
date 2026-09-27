@@ -1286,6 +1286,8 @@ map.on(
   
 // 🟢 新增：優化手機版圖層選單的關閉機制
 const layerControlContainer = layerControl.getContainer();
+layerControlContainer.addEventListener('pointerenter', e=>{if(e.pointerType==='mouse')layerControl.expand();});
+layerControlContainer.querySelector('.leaflet-control-layers-toggle').addEventListener('click', e=>{e.preventDefault();layerControl.expand();});
 
 // 1. 建立一個「關閉選單」的按鈕
 const closeLayerBtn = document.createElement('button');
@@ -1371,6 +1373,7 @@ function organizeLayerControl() {
       '道路綠視率（GVI）',
       '道路綠暴露（reNDVI）',
       '綠暴露（reNDVI）',
+      '即時車流（VD）',
       '自行車道（參考）'
     ];
 
@@ -1989,7 +1992,7 @@ let currentRouteDisplayMode = 'all';
 let ndviLayer = null;
 let ndviScale = null;
 let footMarkers = [];           // 🔹 用來存放動畫腳丫 marker（可能兩個）
-const speeds={walk:3,bike:20};
+const speeds={walk:3,bike:15};
 const scooterCarbonPerKm=50.8;
 
 // ---------------- DOM ----------------
@@ -5602,6 +5605,7 @@ let chiayiBicycleLayer = L.geoJSON(null, {
 overlayMaps["自行車道（參考）"] = chiayiBicycleLayer;
 layerControl.addOverlay(chiayiBicycleLayer, "自行車道（參考）");
 
+let chiayiBikeLoadState='讀取中';
 let chiayiBikeSourceCount = 0;
 let chiayiBikeVisibleSegmentCount = 0;
 
@@ -5710,10 +5714,14 @@ async function loadChiayiBicycleLayer() {
       features: clipped
     });
 
+    chiayiBikeLoadState='已載入';
+    if(document.getElementById('bikeInfoCount'))document.getElementById('bikeInfoCount').textContent=chiayiBikeSourceCount;
     console.log(
       `嘉義市自行車道：原始 ${chiayiBikeSourceCount} 筆，裁切後 ${chiayiBikeVisibleSegmentCount} 個市界內線段`
     );
   } catch (error) {
+    chiayiBikeLoadState='載入失敗，請重新整理後再試';
+    if(document.getElementById('bikeInfoCount'))document.getElementById('bikeInfoCount').textContent=chiayiBikeLoadState;
     console.error('嘉義市自行車道載入／裁切失敗：', error);
   }
 }
@@ -5761,7 +5769,7 @@ bikeInfoControl.onAdd = function() {
 function showBikeInfo() {
   if (!document.querySelector('.bike-info-card')) bikeInfoControl.addTo(map);
   const count = document.getElementById('bikeInfoCount');
-  if (count) count.textContent = chiayiBikeSourceCount || '—';
+  if (count) count.textContent = chiayiBikeLoadState==='已載入'?chiayiBikeSourceCount:chiayiBikeLoadState;
 }
 
 function hideBikeInfo() {
@@ -5835,6 +5843,7 @@ window.addEventListener('DOMContentLoaded',()=>{addDetour();patchFetch();});
 const API='https://healthy-route-api-995293427533.asia-east1.run.app';
 const $=id=>document.getElementById(id);
 
+let toolsEpoch=0;
 let poiLayer=null,loopLayer=null,navLayer=null,watch=null,userMarker=null;
 let navCoords=[],maneuvers=[],spoken=new Set(),selectedNear='start';
 let navView=null,accuracyLayer=null,navLastFix=0,navTimer=null,navVoiceEnabled=true,navTotal=0,navMaxProgress=0,arrivalFixes=0,navActive=false;
@@ -5876,15 +5885,9 @@ function mount(){
       <div id="v2DrawerHome" class="v2-drawer-home">
         <button data-v2="explore">🔍<span><b>附近探索</b><small>查看起點或終點附近的設施</small></span></button>
         <button data-v2="weather">🌤️<span><b>天氣資訊</b><small>中央氣象署嘉義市預報</small></span></button>
-        <button data-v2="loop">🚶<span><b>綠色散步圈</b><small>依時間規劃閉合散步路線</small></span></button>
-        <button data-v2="favorite">⭐<span><b>收藏與歷史</b><small>保存、載入與管理路線</small></span></button>
-        <button data-v2="share">🔗<span><b>分享路線</b><small>分享起終點與規劃偏好</small></span></button>
-        <button data-v2="backup">☁️<span><b>雲端備份</b><small>手動備份與還原收藏</small></span></button>
-        <button data-v2="traffic">🚦<span><b>即時交通</b><small>查看嘉義車流觀測</small></span></button>
-        <button data-v2="install">📲<span><b>安裝與更新</b><small>加入主畫面與檢查版本</small></span></button>
-        <button data-v2="report">⚠️<span><b>路況回報</b><small>填寫位置與道路狀況</small></span></button>
-        <button data-v2="nav" class="v2-nav-entry">🧭<span><b>即時導航</b><small>定位品質判斷與轉向提示</small></span></button>
-        <button data-v2="account">👤<span><b>帳號與隱私</b><small>登入與資料設定</small></span></button>
+        <button data-v2="loop">🚶<span><b>散步圈與主題探索</b><small>依時間與綠意偏好規劃散步圈</small></span></button>
+        <button data-v2="backupHub">⭐<span><b>收藏與雲端備份</b><small>收藏管理與手動雲端備份</small></span></button>
+        <button data-v2="report">⚠️<span><b>路況回報</b><small>提交問題與查看處理進度</small></span></button>
       </div>
       <div id="v2DrawerSub" class="v2-drawer-sub" hidden></div>
     </section>`;
@@ -5895,6 +5898,8 @@ function mount(){
     const host=getMapWrap(),pegman=$('streetViewPegman'),hint=$('streetViewHint');
     if(!host)return;
     const bounds=host.getBoundingClientRect();
+    const headerBottom=document.fullscreenElement?bounds.top:($('top-bar')?.getBoundingClientRect().bottom||bounds.top);
+    host.style.setProperty('--chiayi-controls-top',Math.max(8,headerBottom-bounds.top+8)+'px');
     const corner=host.querySelector('.leaflet-top.leaflet-right');
     const zoom=host.querySelector('.leaflet-control-zoom');
     if(corner&&pegman){
@@ -5911,6 +5916,19 @@ function mount(){
   document.addEventListener('fullscreenchange',()=>requestAnimationFrame(alignMapTools));
   alignMapTools();
   window.ChiayiCommunity.mount(panel,closeFeatureModal);
+  const shortcut=(parent,type,label)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.title=label;b.setAttribute('aria-label',label);b.onclick=()=>openTool(type);parent.append(b);return b;};
+  const header=document.createElement('div');header.className='chiayi-header-actions';document.querySelector('.header-right').append(header);
+  shortcut(header,'install','📲');shortcut(header,'account','👤');const bell=shortcut(header,'notifications','🔔');bell.id='notificationBell';bell.setAttribute('aria-label','站內通知');
+  header.children[0].title='安裝樹導航';header.children[0].setAttribute('aria-label','安裝樹導航');header.children[1].title='帳號與個人隱私';header.children[1].setAttribute('aria-label','帳號與個人隱私');
+  const left=document.createElement('div');left.className='chiayi-side-actions';document.querySelector('.panel-controls').prepend(left);shortcut(left,'nav','🧭 即時導航');
+  const right=document.createElement('div');right.className='chiayi-side-actions';document.querySelector('.panel-stats').prepend(right);
+  for(const [type,label] of [['favorite','⭐ 收藏'],['share','🔗 分享'],['history','🕘 歷史'],['along','🌿 沿途探索']])shortcut(right,type,label);
+  window.ChiayiTraffic.mount(map,layerControl);
+  const peg=$('streetViewPegman');peg.hidden=true;
+  window.addEventListener('chiayi-route-ready',()=>{peg.hidden=false;});
+  window.addEventListener('chiayi-route-planning',()=>{peg.hidden=true;});
+  $('resetBtn').addEventListener('click',()=>{toolsEpoch++;peg.hidden=true;savedTools.clear();document.querySelectorAll('#v2FeatureModal .v2-feature-body').forEach(n=>n.remove());$('toolDock')?.replaceChildren();activeToolTitle='';closeFeatureModal();});
+
 
   L.DomEvent.disableClickPropagation(box);
   L.DomEvent.disableScrollPropagation(box);
@@ -5937,6 +5955,7 @@ function moveToolsToFullscreen(){
   const host=getActiveMapHost(),tools=$('v2MapTools'),hud=$('navHudV2');
   if(host&&tools&&tools.parentElement!==host)host.appendChild(tools);
   if(host&&hud&&hud.parentElement!==host)host.appendChild(hud);
+  if($('toolDock'))host.appendChild($('toolDock'));
   setTimeout(()=>map.invalidateSize(),80);
 }
 
@@ -5958,6 +5977,24 @@ function showHome(){
   $('v2DrawerSub').hidden=true;
   $('v2DrawerSub').innerHTML='';
 }
+const savedTools=new Map();
+let activeToolTitle='';
+const persistentTitles=new Set(['🔍 附近探索','🚶 綠色散步圈','🌤️ 嘉義市天氣','🌿 沿途探索']);
+function restoreTool(title){
+  const body=savedTools.get(title);if(!body)return false;
+  panel(title,null);return true;
+}
+function dockTool(){
+ const title=activeToolTitle;if(!title)return;
+ if(persistentTitles.has(title)&&$('v2ModalBody'))savedTools.set(title,$('v2ModalBody'));
+ let dock=$('toolDock');if(!dock){dock=document.createElement('div');dock.id='toolDock';getActiveMapHost().append(dock);L.DomEvent.disableClickPropagation(dock);}
+ let b=[...dock.children].find(x=>x.dataset.title===title);
+ if(!b){b=document.createElement('button');b.type='button';b.dataset.title=title;dock.append(b);}
+ const selection=title==='🔍 附近探索'?$('poiType')?.selectedOptions[0]?.textContent:title==='🌿 沿途探索'?$('alongType')?.selectedOptions[0]?.textContent:title==='🚶 綠色散步圈'?$('loopMsg')?.innerText.split('\n')[1]:$('weatherDistrict')?.value;
+ b.textContent=title+(selection?' · '+selection:'')+' ▴';b.onclick=()=>{if(savedTools.has(title))restoreTool(title);else{const modal=$('v2FeatureModal');if(activeToolTitle===title){modal.hidden=false;document.body.classList.add('v2-modal-open');}else openTool(b.dataset.tool||'account');}};
+ // Nonpersistent forms are not retained across account switches or other forms.
+ if(!persistentTitles.has(title))b.remove();
+}
 function ensureFeatureModal(){
   let modal=$('v2FeatureModal');
   if(modal)return modal;
@@ -5970,12 +6007,13 @@ function ensureFeatureModal(){
     <section class="v2-feature-window" role="dialog" aria-modal="true" aria-labelledby="v2ModalTitle">
       <header class="v2-feature-header">
         <div><small>附加功能</small><h2 id="v2ModalTitle">功能</h2></div>
-        <button id="v2ModalClose" class="v2-modal-close" type="button" aria-label="關閉">×</button>
+        <button id="v2ModalMin" class="v2-modal-close" type="button" aria-label="收合工具">−</button><button id="v2ModalClose" class="v2-modal-close" type="button" aria-label="關閉">×</button>
       </header>
       <div id="v2ModalBody" class="v2-feature-body"></div>
     </section>`;
   document.body.appendChild(modal);
   $('v2ModalClose').onclick=closeFeatureModal;
+  $('v2ModalMin').onclick=closeFeatureModal;
   modal.querySelector('[data-modal-close]').onclick=closeFeatureModal;
   document.addEventListener('keydown',e=>{
     if(e.key==='Escape'&&!modal.hidden)closeFeatureModal();
@@ -5991,6 +6029,7 @@ function ensureFeatureModal(){
 function closeFeatureModal(){
   const modal=$('v2FeatureModal');
   if(!modal)return;
+  dockTool();
   modal.hidden=true;
   document.body.classList.remove('v2-modal-open');
   $('v2MoreBtn')?.focus({preventScroll:true});
@@ -5999,8 +6038,13 @@ function panel(title,html){
   const modal=ensureFeatureModal();
   (document.fullscreenElement||document.body).appendChild(modal);
   $('v2ModalTitle').textContent=title;
-  const p=$('v2ModalBody');
-  p.innerHTML=html;
+  const old=$('v2ModalBody');
+  if(old){old.removeAttribute('id');old.hidden=true;if(persistentTitles.has(activeToolTitle))savedTools.set(activeToolTitle,old);else old.remove();}
+  let p=savedTools.get(title);
+  if(!p){p=document.createElement('div');p.className='v2-feature-body';modal.querySelector('.v2-feature-window').append(p);}
+  p.id='v2ModalBody';p.hidden=false;
+  if(html!==null)p.innerHTML=html;
+  activeToolTitle=title;
   modal.hidden=false;
   document.body.classList.add('v2-modal-open');
   closeDrawer();
@@ -6010,6 +6054,13 @@ function panel(title,html){
 function note(s){return `<div class="v2-note">ⓘ ${s}</div>`}
 
 function openTool(type){
+  const titles={explore:'🔍 附近探索',loop:'🚶 綠色散步圈',weather:'🌤️ 嘉義市天氣',along:'🌿 沿途探索'};
+  if(titles[type]&&restoreTool(titles[type]))return;
+  if(type==='along')return alongUI();
+  if(type==='history')return window.ChiayiCommunity.open('history');
+  if(type==='notifications')return window.ChiayiCommunity.open('notifications');
+  if(type==='backupHub'){const p=panel('⭐ 收藏與雲端備份','<button id="openFavorites">本機收藏</button><button id="openBackup">雲端備份／還原</button>');p.querySelector('#openFavorites').onclick=()=>openTool('favorite');p.querySelector('#openBackup').onclick=()=>openTool('backup');return;}
+
   if(['favorite','share','account','backup','report','admin'].includes(type))return window.ChiayiCommunity.open(type);
   if(type==='traffic')return window.ChiayiTraffic.open(panel);
   if(type==='install')return window.ChiayiPWA.open(panel);
@@ -6024,6 +6075,7 @@ const datasets={
   parks:['公園綠地','data/parks.geojson','🌳'],
   pet:['寵物友善店家','data/pet_friendly.geojson','🐾'],
   toilet:['公共／親子廁所','data/toilets.geojson','🚻'],
+  cool:['Cool Map 涼爽點','data/cool_map.json','❄️'],
   wifi:['iTaiwan 熱點','data/itaiwan.geojson','📶']
 };
 
@@ -6050,7 +6102,7 @@ function exploreUI(){
       <option value="pet">🐾 寵物友善店家</option>
       <option value="toilet">🚻 公共／親子廁所</option>
       <option value="wifi">📶 iTaiwan 熱點</option>
-      <option value="attraction">🏛️ 嘉義市景點</option>
+      <option value="cool">❄️ Cool Map 涼爽點</option>
     </select>
     <div class="v2-actions">
       <button id="poiLoad" class="primary" type="button">顯示在地圖</button>
@@ -6067,33 +6119,17 @@ function exploreUI(){
 }
 
 async function loadPoi(){
+  const epoch=toolsEpoch;
   const type=$('poiType').value,list=$('poiList');
-  if(type==='attraction'){
-    list.textContent='景點資料讀取中…';
-    try{
-      const r=await fetch(API+'/chiayi/attractions');
-      const text=await r.text();
-      if(!r.ok)throw new Error('景點資料暫時無法取得');
-      const doc=new DOMParser().parseFromString(text,'text/xml');
-      const items=[...doc.querySelectorAll('row,item,Info')];
-      list.innerHTML=items.slice(0,30).map(n=>{
-        const name=n.querySelector('Name,name,名稱')?.textContent||'嘉義景點';
-        const addr=n.querySelector('Add,address,地址')?.textContent||'';
-        return `<div class="v2-poi-item"><span>🏛️</span><div><b>${name}</b><small>${addr}</small></div></div>`;
-      }).join('')||'<p>已連線，但景點 XML 欄位仍需依實際格式調整。</p>';
-    }catch(e){list.textContent=e.message}
-    return;
-  }
-
   const [label,url,emoji]=datasets[type];
   list.textContent='讀取中…';
   try{
-    const gj=await fetch(url).then(r=>{if(!r.ok)throw Error(`找不到 ${url}`);return r.json()});
+    const gj=await poiData(type);if(epoch!==toolsEpoch)return;
     ensurePoiLayer().clearLayers();
     const start=(typeof startLatLng!=='undefined'?startLatLng:null);
     const end=(typeof endLatLng!=='undefined'?endLatLng:null);
     const center=selectedNear==='end'?(end||map.getCenter()):(start||map.getCenter());
-    const endpoint=selectedNear==='end'?'終點 B':'起點 A';
+    const endpoint=selectedNear==='end'?(end?'終點 B':'地圖中心'):(start?'起點 A':'地圖中心');
 
     const rows=gj.features
       .filter(f=>f.geometry?.type==='Point')
@@ -6109,17 +6145,32 @@ async function loadPoi(){
       const name=p.name||p.NAME||p.名稱||label;
       const addr=p.address||p.location||p.地址||'';
       const marker=L.marker([lat,lng],{icon:poiIcon(type)})
-        .bindPopup(`<b>${emoji} ${name}</b><br>${addr}<br>距離${endpoint}約 ${Math.round(d)} m`)
+        .bindPopup(`<b>${emoji} ${escapeHtml(name)}</b><br>${escapeHtml(addr)}<br>距離${endpoint}約 ${Math.round(d)} m`)
         .addTo(poiLayer);
       const row=document.createElement('div');
       row.className='v2-poi-item';
-      row.innerHTML=`<span>${emoji}</span><div><b>${name}</b><small>距離${endpoint} ${Math.round(d)} m${addr?' ・ '+addr:''}</small></div>`;
-      row.onclick=()=>{map.setView([lat,lng],17);marker.openPopup()};
+      row.innerHTML=`<span>${emoji}</span><div><b>${escapeHtml(name)}</b><small>距離${endpoint} ${Math.round(d)} m${addr?' ・ '+escapeHtml(addr):''}</small></div>`;
+      row.onclick=()=>{closeFeatureModal();map.setView([lat,lng],17);marker.openPopup()};
       list.appendChild(row);
     });
+    closeFeatureModal();
   }catch(e){list.textContent=e.message}
 }
 
+async function poiData(type){
+ const response=await fetch(datasets[type][1]);if(!response.ok)throw Error('探索資料讀取失敗');const data=await response.json();
+ if(type!=='cool')return data;
+ return {type:'FeatureCollection',features:data.filter(x=>x.city==='嘉義市'&&Number.isFinite(+x.longitude)&&Number.isFinite(+x.latitude)).map(x=>({type:'Feature',geometry:{type:'Point',coordinates:[+x.longitude,+x.latitude]},properties:{name:x.placename,address:[x.address,x.openinghours, x.airconditioning==='1'?'有冷氣':'',x.waterdispenser==='1'?'有飲水機':'',x.restroom==='1'?'有廁所':''].filter(Boolean).join(' · ')}}))};
+}
+function alongUI(){
+ const p=panel('🌿 沿途探索',`${note('先設定起終點並完成路徑規劃，再尋找路線兩側 300 公尺內的設施。距離是直線距離，不代表可直接步行到達。')}<label>探索路線<select id="alongRoute"><option value="shortest">最短路線</option><option value="ndvi">綠暴露路線</option><option value="gvi">綠視率路線</option></select></label><label>類型<select id="alongType">${Object.entries(datasets).map(([k,v])=>`<option value="${k}">${v[2]} ${v[0]}</option>`).join('')}</select></label><button id="alongGo">顯示在地圖上</button><button id="alongClear">清除探索點</button><div id="alongResults" role="status"></div>`);
+ $('alongClear').onclick=()=>{ensurePoiLayer().clearLayers();$('alongResults').textContent='已清除';};
+ $('alongGo').onclick=async()=>{const epoch=toolsEpoch;const out=$('alongResults');const route=window.lastRouteFeatures?.[$('alongRoute').value];if(!startLatLng||!endLatLng||!route){out.textContent='請先設定起點與終點，完成路徑規劃。';return;}
+ const type=$('alongType').value;out.textContent='尋找沿途設施…';try{const data=await poiData(type);if(epoch!==toolsEpoch)return;const rows=data.features.filter(f=>f.geometry?.type==='Point').map(f=>({f,d:turf.pointToLineDistance(f,route,{units:'meters'})})).filter(x=>x.d<=300).sort((a,b)=>a.d-b.d).slice(0,80);ensurePoiLayer().clearLayers();out.replaceChildren();
+ const heading=document.createElement('p');heading.textContent=`路線周邊找到 ${rows.length} 處（最多顯示 80 處）`;out.append(heading);
+ for(const {f,d} of rows){const [lng,lat]=f.geometry.coordinates;const props=f.properties||{};const name=props.name||props.NAME||props.名稱||datasets[type][0];const info=document.createElement('div');info.textContent=name+' · '+(props.address||props.地址||'')+' · 距路線約 '+Math.round(d)+' m';const marker=L.marker([lat,lng],{icon:poiIcon(type)}).bindPopup(info).addTo(poiLayer);const b=document.createElement('button');b.textContent=name+' · '+Math.round(d)+' m';b.onclick=()=>{closeFeatureModal();map.setView([lat,lng],17);marker.openPopup();};out.append(b);}
+ closeFeatureModal();}catch(e){out.textContent=e.message;}};
+}
 function loopUI(){
   const p=panel('🚶 綠色散步圈',`
     ${note('數字代表預計散步的總時間。系統會以目前起點 A 作為起點與終點，沿嘉義市道路規劃閉合散步路線。')}
@@ -6137,6 +6188,7 @@ function loopUI(){
 }
 
 async function createLoop(){
+  const epoch=toolsEpoch;
   const start=(typeof startLatLng!=='undefined'?startLatLng:null);
   if(!start)return alert('請先設定起點 A');
   const msg=$('loopMsg');
@@ -6147,6 +6199,7 @@ async function createLoop(){
       body:JSON.stringify({lat:start.lat,lon:start.lng,minutes:+$('loopMin').value,metric:$('loopMetric').value})
     });
     const d=await r.json();
+    if(epoch!==toolsEpoch)return;
     if(!r.ok)throw Error(d.error||d.message||'找不到散步圈');
 
     clearLoop(false);
@@ -6161,6 +6214,7 @@ async function createLoop(){
     $('loopNav').onclick=()=>{closeDrawer();startNav('loop')};
     $('loopAgain').onclick=createLoop;
     $('loopClear').onclick=()=>clearLoop(true);
+    $('streetViewPegman').hidden=false;closeFeatureModal();
   }catch(e){msg.textContent=e.message}
 }
 

@@ -1,6 +1,6 @@
 // Only cache the offline landing page and install icons. Never cache locations,
 // account APIs, maps, tokens or third-party imagery.
-const VERSION='chiayi-pwa-20260926-1';
+const VERSION='chiayi-pwa-20260927-2';
 const FILES=['offline.html','icons/icon-192.png','icons/icon-512.png'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(VERSION).then(c=>c.addAll(FILES))));
 self.addEventListener('activate',event=>event.waitUntil((async()=>{for(const key of await caches.keys())if(key.startsWith('chiayi-pwa-')&&key!==VERSION)await caches.delete(key);await self.clients.claim();})()));

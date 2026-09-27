@@ -69,7 +69,7 @@ def state(row, now=None):
         return 'stale'
     if str(row.get('deviceStatus')) != '0':
         return 'fault'
-    return 'ok' if row.get('speed') is not None else 'missing'
+    return 'ok' if row.get('flowRate') is not None or row.get('speed') is not None else 'missing'
 
 
 def normalize(stations, observations):
@@ -84,18 +84,31 @@ def normalize(stations, observations):
         row = live.get(station.get('VDID'), {})
         numerator = denominator = 0
         partial = False
+        rates = []
+        flow_complete = True
         for link in row.get('LinkFlows', []):
-            for lane in link.get('Lanes', []):
+            lane_volumes = []
+            lanes = link.get('Lanes', [])
+            if not lanes:
+                flow_complete = False
+            for lane in lanes:
                 speed = number(lane.get('Speed'), 200)
                 volumes = [number(v.get('Volume')) for v in lane.get('Vehicles', [])]
+                if volumes and all(v is not None for v in volumes):
+                    lane_volumes.append(sum(volumes))
+                else:
+                    flow_complete = False
                 if speed is None or not volumes or any(v is None for v in volumes):
                     partial = True
                     continue
                 volume = sum(volumes)
                 numerator += speed * volume
                 denominator += volume
+            if lane_volumes:
+                rates.append(sum(lane_volumes) / len(lanes))
         result.append({'id': str(station.get('VDID', ''))[:100], 'road': str(station.get('RoadName', '車流測站'))[:120],
                        'lat': lat, 'lng': lng, 'time': row.get('DataCollectTime'), 'deviceStatus': row.get('Status'),
+                       'flowRate': round(max(rates), 2) if rates and flow_complete else None,
                        'speed': round(numerator / denominator, 1) if denominator else None, 'partial': partial})
     return result
 

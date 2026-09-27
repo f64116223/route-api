@@ -21,12 +21,14 @@ window.addEventListener('chiayi-route-ready',e=>capture(e.detail));
 window.addEventListener('DOMContentLoaded',()=>document.getElementById('resetBtn')?.addEventListener('click',()=>{current=null;}));
 function description(r){return `${r.mode==='bike'?'自行車':'步行'} · A ${r.start.lat.toFixed(5)}, ${r.start.lng.toFixed(5)} → B ${r.end.lat.toFixed(5)}, ${r.end.lng.toFixed(5)}${r.extra_minutes?' · 最多多走 '+r.extra_minutes+' 分鐘':''}`;}
 function panel(title){const p=hostPanel(title,'');p.classList.add('community-body');return p;}
-async function library(){
- const p=panel('⭐ 收藏與歷史');el('p','紀錄保存在此瀏覽器，最多各 30 筆；不登入也能使用。',p,'v2-note');
+async function library(view='favorite'){
+ const p=panel(view==='history'?'🕘 歷史紀錄':'⭐ 我的收藏');el('p','紀錄保存在此瀏覽器，最多各 30 筆；不登入也能使用。',p,'v2-note');
  if(current){const name=el('input',undefined,p);name.placeholder='為目前路線取個名稱';name.maxLength=80;name.setAttribute('aria-label','收藏名稱');button('收藏目前路線',p,()=>{addFavorite(current.settings,name.value.trim()||'我的嘉義路線');return library();});}
  el('h3','我的收藏',p);
  const rows=favorites();if(!rows.length)el('p','尚無收藏，請先規劃一條路線。',p);
  for(const row of rows){const card=el('section',undefined,p,'community-card');const name=el('input',undefined,card);name.value=row.title;name.maxLength=80;name.setAttribute('aria-label','修改收藏名稱');el('p',description(row),card);const actions=el('div',undefined,card,'v2-actions');button('儲存名稱',actions,()=>{const list=favorites();const i=list.findIndex(r=>r.id===row.id);if(i<0)throw Error('收藏已移除');list[i]=R.favorite({...list[i],title:name.value});save(KEY,list);});button('重新規劃',actions,()=>{window.ChiayiRouteBridge.load(row);closePanel();});button('分享',actions,()=>share(row));button('刪除',actions,()=>{save(KEY,favorites().filter(r=>r.id!==row.id));return library();});}
+ if(view==='history')for(const node of p.children)node.hidden=true;
+ if(view!=='history')return;
  el('h3','最近規劃',p);const list=el('div','讀取中…',p);
  try{const rows=await histories();if(!list.isConnected)return;list.replaceChildren();if(!rows.length)el('p','尚無歷史紀錄。',list);for(const row of rows){const card=el('section',undefined,list,'community-card');el('strong',new Date(row.at).toLocaleString('zh-TW'),card);el('p',description(row.settings),card);const actions=el('div',undefined,card,'v2-actions');button('載入當時結果',actions,()=>{window.ChiayiRouteBridge.load(row.settings,row.data);closePanel();});button('重新規劃',actions,()=>{window.ChiayiRouteBridge.load(row.settings);closePanel();});button('加入收藏',actions,()=>{addFavorite(row.settings,'歷史路線 '+new Date(row.at).toLocaleDateString('zh-TW'));return library();});button('刪除',actions,async()=>{await historyStore('readwrite',s=>s.delete(row.id));await library();});}}catch(e){list.textContent=e.message;}
 }
@@ -73,7 +75,7 @@ async function backup(){
 }
 const categories={construction:'施工',blocked:'道路封閉',obstacle:'通行障礙',flood:'積水',other:'其他'};
 async function report(){
- const p=panel('⚠️ 路況回報');el('p','請描述位置與狀況，管理員會在後台查看。這不是緊急通報管道。請勿填寫他人個資。',p,'v2-note');
+ const p=panel('⚠️ 路況回報');button('我的回報與處理進度',p,()=>myReports());el('p','請描述位置與狀況，管理員會在後台查看。這不是緊急通報管道。請勿填寫他人個資。',p,'v2-note');
  const form=el('form',undefined,p);el('label','回報類型',form);const type=el('select',undefined,form);for(const [k,v]of Object.entries(categories)){const o=el('option',v,type);o.value=k;}type.setAttribute('aria-label','回報類型');
  el('label','發生位置／路口',form);const locationInput=el('input',undefined,form);locationInput.required=true;locationInput.minLength=2;locationInput.maxLength=160;locationInput.setAttribute('aria-label','發生位置');locationInput.placeholder='例如：民生北路與中山路口';
  el('label','狀況說明',form);const note=el('textarea',undefined,form);note.required=true;note.minLength=5;note.maxLength=1000;note.rows=5;note.setAttribute('aria-label','狀況說明');
@@ -84,7 +86,29 @@ async function report(){
  button('Google 登入（保留表單內容）',p,async()=>{await initialize();if(!auth.currentUser)await sdk.signInWithPopup(auth,new sdk.GoogleAuthProvider());status.textContent='已登入，可繼續填寫並送出回報';});
 }
 async function admin(cursor=null){
- const p=panel('🛠️ 路況管理後台');const status=el('p','確認管理權限中…',p);try{await initialize();const data=await request('/admin/reports'+(cursor?'?cursor='+encodeURIComponent(cursor):''));if(!p.isConnected)return;status.textContent=data.rows.length?'本頁 '+data.rows.length+' 筆回報':'目前沒有回報';button('重新整理／第一頁',p,()=>admin());for(const row of data.rows){const card=el('section',undefined,p,'community-card');el('h3',(categories[row.category]||row.category)+' · '+row.location,card);el('p',row.note,card);el('small',new Date(row.created_at).toLocaleString('zh-TW')+' · '+row.id,card);if(row.point)el('p',`座標：${row.point.lat}, ${row.point.lng}`,card);const select=el('select',undefined,card);select.setAttribute('aria-label','回報處理狀態');for(const [v,t]of Object.entries({pending:'待處理',reviewing:'處理中',resolved:'已處理',dismissed:'不採納'})){const o=el('option',t,select);o.value=v;}select.value=row.status;const reply=el('textarea',undefined,card);reply.value=row.reply||'';reply.maxLength=500;reply.placeholder='內部處理備註';reply.setAttribute('aria-label','內部處理備註');const state=el('p','',card);button('儲存處理結果',card,async()=>{await request('/admin/reports/'+row.id,{method:'PATCH',body:{status:select.value,reply:reply.value}});state.textContent='已儲存';});}if(data.next)button('下一頁',p,()=>admin(data.next));}catch(e){status.textContent=e.message;button('帳號登入',p,account);}
+ const p=panel('🛠️ 路況管理後台');button('新回報通知',p,()=>notifications('admin'));const status=el('p','確認管理權限中…',p);try{await initialize();const data=await request('/admin/reports'+(cursor?'?cursor='+encodeURIComponent(cursor):''));if(!p.isConnected)return;status.textContent=data.rows.length?'本頁 '+data.rows.length+' 筆回報':'目前沒有回報';button('重新整理／第一頁',p,()=>admin());for(const row of data.rows){const card=el('section',undefined,p,'community-card');el('h3',(categories[row.category]||row.category)+' · '+row.location,card);el('p',row.note,card);el('small',new Date(row.created_at).toLocaleString('zh-TW')+' · '+row.id,card);if(row.point)el('p',`座標：${row.point.lat}, ${row.point.lng}`,card);const select=el('select',undefined,card);select.setAttribute('aria-label','回報處理狀態');for(const [v,t]of Object.entries({pending:'待處理',reviewing:'處理中',resolved:'已處理',dismissed:'不採納'})){const o=el('option',t,select);o.value=v;}select.value=row.status;const reply=el('textarea',undefined,card);reply.value=row.reply||'';reply.maxLength=500;reply.placeholder='內部處理備註';reply.setAttribute('aria-label','內部處理備註');const publicReply=el('textarea',undefined,card);publicReply.value=row.public_reply||'';publicReply.maxLength=500;publicReply.placeholder='回覆回報者（對方可見）';publicReply.setAttribute('aria-label','回覆回報者');const state=el('p','',card);button('儲存處理結果',card,async()=>{await request('/admin/reports/'+row.id,{method:'PATCH',body:{status:select.value,reply:reply.value,public_reply:publicReply.value}});state.textContent='已儲存';});}if(data.next)button('下一頁',p,()=>admin(data.next));}catch(e){status.textContent=e.message;button('帳號登入',p,account);}
 }
-window.ChiayiCommunity={mount(panelFn,closeFn){hostPanel=panelFn;closePanel=closeFn;receiveShare();window.addEventListener('hashchange',receiveShare);},open(type){return ({favorite:library,share,account,backup,report,admin}[type]||account)();}};
+const statusLabels={pending:'待處理',reviewing:'處理中',resolved:'已處理',dismissed:'不採納'};
+async function myReports(cursor=null){
+ const p=panel('📋 我的回報');const message=el('p','讀取中…',p);try{await initialize();const data=await request('/my-reports'+(cursor?'?cursor='+encodeURIComponent(cursor):''));if(!p.isConnected)return;message.textContent='每頁最多 50 筆，僅顯示你的回報。';for(const row of data.rows){const card=el('section',undefined,p,'community-card');el('h3',row.location+' · '+(statusLabels[row.status]||row.status),card);el('p',row.note,card);el('small',new Date(row.created_at).toLocaleString('zh-TW'),card);el('p','處理回覆：'+(row.public_reply||'尚無公開回覆'),card);}if(!data.rows.length)message.textContent='尚無回報';if(data.next)button('下一頁',p,()=>myReports(data.next));}catch(e){message.textContent=e.message;button('帳號登入',p,account);}
+}
+async function notifications(audience='user',cursor=null){
+ const p=panel('🔔 站內通知');el('p','網站開啟且登入時約每分鐘檢查。關閉網站後不會推播；通知從新版部署後開始產生。',p,'v2-note');const message=el('p','讀取中…',p);
+ try{await initialize();profile=await request('/me');if(!p.isConnected)return;button('我的回報',p,()=>myReports());button('我的進度通知',p,()=>notifications('user'));if(profile.admin)button('管理員新回報通知',p,()=>notifications('admin'));
+ const data=await request('/notifications?audience='+audience+(cursor?'&cursor='+encodeURIComponent(cursor):''));if(!p.isConnected)return;message.textContent=data.rows.length?'本頁 '+data.rows.length+' 筆通知':'目前沒有通知';
+ for(const row of data.rows){const card=el('section',undefined,p,'community-card');el('h3',(row.read?'':'● 未讀 · ')+row.title,card);el('small',new Date(row.created_at).toLocaleString('zh-TW'),card);el('p','回報編號：'+row.report_id,card);if(row.status)el('p',statusLabels[row.status],card);if(row.public_reply)el('p',row.public_reply,card);button(audience==='admin'?'查看管理後台':'查看我的回報',card,()=>audience==='admin'?admin():myReports());if(!row.read)button('標示已讀',card,async()=>{await request('/notifications/'+row.id+'/read?audience='+audience,{method:'POST'});await notifications(audience,cursor);refreshBadge();});}
+ if(data.next)button('下一頁',p,()=>notifications(audience,data.next));
+ }catch(e){message.textContent=e.message;button('帳號登入',p,account);}
+}
+let badgeTimer,badgeBusy=false;
+function badge(text,title){const b=document.getElementById('notificationBell');if(b){b.textContent='🔔'+(text?' '+text:'');b.title=title;b.setAttribute('aria-label',title);}}
+async function refreshBadge(){
+ clearTimeout(badgeTimer);if(document.hidden||badgeBusy)return;
+ if(!auth?.currentUser){badge('','站內通知（登入後查看）');return;}
+ const uid=auth.currentUser.uid,generation=accountGeneration;
+ badgeBusy=true;try{const mine=await request('/notifications');const feeds=[mine];if(profile?.admin)feeds.push(await request('/notifications?audience=admin'));if(generation!==accountGeneration)return;const n=feeds.reduce((sum,d)=>sum+d.rows.filter(r=>!r.read).length,0);badge(n?String(n)+(feeds.some(d=>d.next)?'+':''):'','站內通知：最近通知中 '+n+' 筆未讀');}catch{if(generation===accountGeneration)badge('!','通知暫時無法更新，點擊重試');}finally{badgeBusy=false;if(auth?.currentUser&&!document.hidden)badgeTimer=setTimeout(refreshBadge,auth.currentUser.uid===uid?60000:0);else badge('','站內通知（登入後查看）');}
+}
+window.addEventListener('chiayi-account-change',()=>{badge('','站內通知');refreshBadge();});
+document.addEventListener('visibilitychange',()=>{clearTimeout(badgeTimer);if(!document.hidden)refreshBadge();});
+window.ChiayiCommunity={mount(panelFn,closeFn){hostPanel=panelFn;closePanel=closeFn;receiveShare();window.addEventListener('hashchange',receiveShare);initialize().then(refreshBadge).catch(()=>{});},open(type){return ({favorite:library,history:()=>library('history'),notifications,myReports,share,account,backup,report,admin}[type]||account)();}};
 })();
